@@ -1,0 +1,63 @@
+# Parametric simulations {#eplusr}
+
+TODO: `eplusr::use_eplus()`
+
+```{r}
+usethis::proj_set(projpath)
+if (is.null(getOption("knitr.in.progress"))) setwd(wd)
+```
+
+```{r init-eplus, include = FALSE}
+if (!eplusr::is_avail_eplus(9.4)) eplusr::install_eplus(9.4, local = TRUE)
+```
+
+This chapter demonstrates the process of performing parametric simulation
+analyses using the `ParametricJob` class. It is based on
+the {eplusr} [*Parametric simulations*](https://hongyuanjia.github.io/eplusr/articles/param.html)
+vignette, together with steps on file management technique specific for a
+research compendium.
+
+The main focuses are on showcasing the capabilities of
+
+1. creating parametric models by applying measures and
+2. easing the comparative analysis by reusing code snippets developed in data
+   exploration process.
+
+## Include the raw data
+
+First, we use `usethis::use_directory()` to create the `data-raw` folder which
+will be used to store the raw simulation input, including but not necessarily
+the `IDF` file and `EPW` file.
+
+```{r create-dir-data-raw}
+use_directory("data-raw")
+```
+
+For demonstration purpose, here we use the U.S. Department of Energy (DOE)
+medium office reference building model [@field2010using] and TMY3 weather data of
+Chicago Internal Airport. Both of them have already distributed together with
+EnergyPlus v9.4.
+
+First, we load necessary packages used in this chapter
+
+```{r path-raw-input}
+library(eplusr) # for interacting EnergyPlus with R
+library(fs)     # for file system operation
+library(here)   # for project-oriented file path specification
+
+# get EnergyPlus v9.4 installation path
+dir_eplus <- eplus_config(9.4)$dir
+
+path_model <- path(dir_eplus, "ExampleFiles/RefBldgMediumOfficeNew2004_Chicago.idf")
+path_weather <- path(dir_eplus, "WeatherData/USA_IL_Chicago-OHare.Intl.AP.725300_TMY3.epw")
+```
+
+We can copy them to the `data-raw` directory we just created.
+
+```{r copy-raw-input-fake, eval = FALSE}
+file_copy(
+    path = c(path_model, path_weather),
+    new_path = here("data-raw", path_file(path_model, path_weather)),
+    overwrite = TRUE
+)
+```

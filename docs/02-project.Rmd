@@ -1,0 +1,234 @@
+# Build up project {#project}
+
+```{r, include = FALSE}
+options(crayon.enabled = FALSE)
+
+## build the package? if so, where?
+## * NA     --> no, don't build it
+## * "user" --> build in home, so it's easy to access after
+## * "tmp"  --> build in session temp dir, it's disposable
+where <- "user"
+```
+
+This chapter gives a description on what the file structure would look like for
+a compendium for building energy simulation research and demonstrate the
+necessary steps to build up a file structure of research compendium using
+{usethis} [@wickham2021usethis] from stretch. It is based on the {usethis}
+[*Setup*](https://usethis.r-lib.org/articles/articles/usethis-setup.html)
+vignette.
+
+## Prerequisites
+
+This chapter focusses on {usethis}, a workflow package that automates repetitive
+tasks that arise during project setup and development, both for R packages and
+non-package projects. You can load {usethis} by running this code:
+
+```{r}
+library(usethis)
+```
+
+## R-package-style file structure
+
+:::: {.columns style="display: flex;"}
+
+::: {.column width="25%"}
+```{r pkg-structure, echo = FALSE, out.width = "90%"}
+knitr::include_graphics("images/structure.png")
+```
+:::
+
+::: {.column width="75%"}
+- `README.md`: Description of contents and guide to users
+
+- `LICENSE`: Specify conditions of use/reuse of code, data, text and output
+
+- `DESCRIPTION`: Project metadata, including authors, version, license type,
+  etc.
+
+- `NAMESPACE`: (Optional) Auto-generated file that exports R functions for
+  repeated use. Only needed if the compendium is bundled as an R package and it
+  contains exported functions.
+
+- `R/`: custom R functions used repeatedly throughout the project.
+
+- `man`: (Optional) Auto-generated documentation for the custom R functions.
+  Only needed if the compendium is bundled as an R package and it contains
+  exported functions.
+
+- `data-raw/`: Raw data in open formats, not changed once created. Usually
+  contains the model, weather file and other raw data input.
+
+- `data/`: (Optional) Main simulation output for each case and result summary.
+
+- `analysis/`: R Markdown file and BibTeX file.
+
+- `_targets.R`: Defines the workflow using [{targets}](https://github.com/ropensci/targets)
+  package.
+
+- `renv.lock`: The [{renv}](https://rstudio.github.io/renv/) lockfile,
+  describing the state of libraries used in this project.
+
+- `Dockerfile`: Docker image specification.
+:::
+
+::::
+
+## Setup .Rprofile
+
+`.Rprofile` is a plain text file that contains R code to be run every time R
+starts up. Typically `.Rprofile` is located in the users' home directory, i.e.
+`~/.Rprofile`.
+
+Example use cases for `.RProfile` include: wrting a welcome message, setting a
+default CRAN mirror for quicker package downloading, changing global options, etc.
+
+We can use `.Rprofile` to add some {usethis} options about the metadata of
+package creation.  These options will be used every time you create a new R
+project using {usethis}.
+
+The easiest way to edit `.Rprofile` is by running `usethis::edit_r_profile()`.
+Open it add add codes below to it. Do remember to change values like name, email,
+etc. accordingly.
+
+```{r usethis-profile}
+options(
+    # default author name. change accordingly
+    usethis.full_name = "Hongyuan Jia",
+    # default values in the DESCRIPTION file. change accordingly
+    usethis.description = list(
+        "Authors@R" = utils::person(
+            # default author name
+            "Hongyuan", "Jia",
+            # default author email
+            email = "hongyuanjia@outlook.com",
+            # default role, i.e. aut = author, cre = creator
+            role = c("aut", "cre"),
+            # default ORCID
+            comment = c(ORCID = "0000-0002-0075-8183")
+            ),
+        # default license of the R code
+        License = "MIT + file LICENSE",
+        # default package initial version
+        Version = "0.0.0.9000"
+    )
+)
+```
+
+## Create an R project
+
+```{r configure, include = FALSE}
+where <- match.arg(
+    as.character(where),
+    choices = c(NA, "user", "tmp")
+)
+create <- !is.na(where)
+where <- switch(
+    where,
+    user = fs::path_home(),
+    tmp = fs::path_temp(),
+    NULL
+)
+
+projpath <- fs::path(where, "ReprodBES")
+
+if (!is.null(where)) {
+    if (fs::dir_exists(projpath)) fs::dir_delete(projpath)
+    fs::dir_create(projpath)
+}
+
+wd <- getwd()
+```
+
+```{r create-project-fake, eval = FALSE}
+library(usethis) # for project strcuture creation
+
+create_project("~/ReprodBES", rstudio = TRUE)
+```
+
+```{r create-project, eval = create, echo = FALSE}
+library(usethis)
+create_project(projpath, rstudio = TRUE, open = FALSE)
+```
+
+```{r set-proj-and-wd, eval = create, include = FALSE}
+if (is.null(getOption("knitr.in.progress"))) setwd(wd)
+knitr::opts_knit$set(root.dir = wd)
+```
+
+```{r init-proj, echo = FALSE, fig.cap = "Contents in the initialized project folder"}
+knitr::include_graphics("images/init_proj.png")
+```
+
+## Setup Git
+
+Configure Git `user.name` and `user.email`
+
+```{r git-config}
+use_git_config(user.name = "Hongyuan Jia", user.email = "hongyuanjia@outlook.com")
+```
+
+Initialize the project as a Git repository.
+
+```{r init-git-fake, eval = FALSE}
+use_git()
+```
+
+```{r init-git, eval = create, include = FALSE}
+with_project(projpath, use_git())
+
+# mimick the git commit process usethis::use_git() does in an interactive
+# session
+with_project(projpath, {
+    stat <- gert::git_status()
+    paths <- stat[stat$status == "new", "file", drop = TRUE]
+    gert::git_add(paths)
+    gert::git_commit("Initial commit")
+})
+```
+
+## Create `DESCRIPTION`
+
+Create the `DESCRIPTION`. Fields like `Author`, `License` will be automatically
+filled based on the `.Rprofile` settings.
+
+```{r init-desc-fake, eval = FALSE}
+use_description()
+```
+
+```{r init-desc, eval = create, echo = FALSE}
+with_project(projpath, usethis::use_description())
+```
+
+## Create `LICENSE`
+
+Create the `LICENSE` file:
+
+```{r init-license-fake, eval = FALSE}
+use_mit_license("Hongyuan Jia")
+```
+
+```{r init-license, eval = create, echo = FALSE}
+with_project(projpath, usethis::use_mit_license("Hongyuan Jia"))
+```
+
+## Create `README.md`
+
+Create the `README.md` file:
+
+```{r init-readme-fake, eval = FALSE}
+use_readme_md()
+```
+
+```{r init-readme, eval = create, echo = FALSE}
+with_project(projpath, usethis::use_readme_md())
+```
+
+We will fill out other contents like description, citation, license and etc in
+[REF].
+
+## Overview of current files
+
+```{r pkg-files, echo = FALSE, out.width = "100%"}
+knitr::include_graphics("images/init_meta.png")
+```
+

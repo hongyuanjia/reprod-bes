@@ -1,0 +1,9 @@
+# Sharing the compendium {#github}
+
+- `usethis::use_github()`
+- License
+- `usethis::use_code_of_conduct()`
+- citation
+- Zenodo
+- Netlify hosted bookdown for manuscript?
+

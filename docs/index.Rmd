@@ -1,0 +1,81 @@
+---
+title: "Reproducing building energy simulations using R"
+subtitle: "Guide for a research compendium workflow and best practices"
+author: "Hongyuan Jia"
+date: "2021-05-10"
+description: >
+    This guide will teach you how to create a research compendium for building
+    energy simulations using R.
+
+site: bookdown::bookdown_site
+github-repo: hongyuanjia/reprod-bes
+twitter-handle: jiahony
+cover-image: images/cover.png
+
+documentclass: book
+bibliography: [references.bib]
+biblio-style: apalike
+link-citations: yes
+---
+
+```{r setup, include = FALSE}
+options(digits = 3, width = 68, str = strOptions(strict.width = "cut"))
+
+knitr::opts_chunk$set(
+    comment = "#>",
+    collapse = TRUE,
+    fig.align = "center"
+)
+
+knitr::opts_chunk$set(width = 68)
+
+if (knitr::is_latex_output()) {
+    options(crayon.enabled = FALSE)
+    options(cli.unicode = TRUE)
+}
+```
+
+# Welcome {-}
+
+Welcome to the Reproducing building simulations using R by [Hongyuan Jia](http://hongyuanjia.me).
+
+In this guide you'll learn how to use R-package-style file structure to create a
+research compendium for building energy simulations using R.
+
+```{r cover, echo = FALSE}
+knitr::include_graphics("images/cover.png")
+```
+
+This guide is still work-in-progress. It heavily leans on a collection of
+various open-source books, reports, papers and manuals, including:
+
+* rOpenSci Reproducibility Guide [@ropensci2018reproducibility]
+* R Packages book [@wickham2015packages]
+* Reproducible computation at scale in R with {targets} toturial [@landau2021reproducible]
+* {usethis}
+  [*Setup*](https://usethis.r-lib.org/articles/articles/usethis-setup.html) and
+  [*Managing Git(Hub) Credentials*](https://usethis.r-lib.org/articles/articles/git-credentials.html)
+  vignettes [@wickham2021usethis]
+* {eplusr}
+  [*Parametric simulations*](https://hongyuanjia.github.io/eplusr/articles/param.html)
+  vignette [@jia2021eplusr]
+* R Markdown: The Definitive Guide book [@xie2018markdown]
+* {renv} [*Introduction to {renv}*](https://rstudio.github.io/renv/articles/renv.html)
+  vignette [@ushey2021renv]
+
+## License {-}
+
+<a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/">
+    <img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-nc/4.0/88x31.png"/>
+</a>
+<br/>
+<span xmlns:dct="http://purl.org/dc/terms/" property="dct:title">
+    *Reproducing building energy simulations using R*
+</span>
+    by
+<a xmlns:cc="http://creativecommons.org/ns#" href="https://github.com/hongyuanjia/reprod-bes" property="cc:attributionName" rel="cc:attributionURL">
+    Hongyuan Jia
+</a>
+    is licensed under a
+<a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/">
+    Creative Commons Attribution-NonCommercial 4.0 International License</a>.

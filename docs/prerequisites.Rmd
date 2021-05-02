@@ -1,0 +1,133 @@
+# Prerequisites {-}
+
+This guide is meant to be hands-on and interactive. This means you have the
+option of installing the software and playing with it during the workshop using
+this guide. But it is still strongly preferred not to spend time getting
+everyone setup, so some things are needed in advance.
+
+## R, RStudio and package dependencies {-}
+
+This guide assumes you use R and RStudio as the IDE
+([Integrated Development Environment](https://en.wikipedia.org/wiki/Integrated_development_environment)).
+Please install them using the link below:
+
+* R: https://www.r-project.org
+* RStudio (>= 1.4): https://rstudio.com/products/rstudio/download/#download
+
+All R package dependencies used in this guide can be installed via:
+
+```{r install, eval = FALSE}
+install.packages("pak")
+pak::pkg_install("hongyuanjia/reprod-bes")
+```
+
+This guide will teach you how to create a research compendium using R. So basic
+knowledge of R programming is preferred. No need to be proficient in R, but you
+need to know some R basics, including basic data types, flow controls and
+functions.
+
+There are many excellent R programming tutorials on the internet. One of them is
+the [beginner materials](https://education.rstudio.com/learn/beginner/) provided
+by [RStudio Eduction](https://education.rstudio.com/) center.
+
+For those who never did programming in R before, it is recommended to at least
+read through the free online ModernDive chapter
+[Getting Started with R and RStudio](https://moderndive.netlify.com/1-getting-started.html).
+You may also enjoy the
+[Basic Basics](https://rladiessydney.org/courses/ryouwithme/basicbasics)
+lesson unit from
+[R-Ladies Sydney](https://rladiessydney.org/),
+which provides an
+[opinionated tour of RStudio](https://rladiessydney.org/courses/ryouwithme/01-basicbasics-1/)
+for new users and a step-by-step guide to
+[installing and using R packages](https://rladiessydney.org/courses/ryouwithme/01-basicbasics-2/).
+You may also try the
+[RStudio Primers](https://rstudio.cloud/learn/primers)
+interactive R tutorials provided by
+[RStudio Cloud](https://rstudio.cloud/).
+
+## Git and GitHub {-}
+
+This guide uses Git for the [version control](https://en.wikipedia.org/wiki/Version_control)
+system and [GitHub](https://github.com/) for free hosting Git-based projects.
+
+Please download and install Git via https://git-scm.com/downloads. More detailed
+instructions on installing Git can be found in the
+[Install Git](https://happygitwithr.com/install-git.html)
+chapter in the free online book
+[Happy Git and GitHub for the useR](https://happygitwithr.com/)
+by
+[Jenny Bryan](https://jennybryan.org/).
+
+For those who did not have a GitHub account, follow the instructions in the
+[Register a GitHub account](https://happygitwithr.com/github-acct.html)
+chapter in the same book above.
+
+## EnergyPlus {-}
+
+This guide uses the U.S. Department of Energy (DOE) medium office reference
+building model [@field2010using] distributed together with
+[EnergyPlus](https://www.energyplus.net/) for conducting parametric
+building energy simulations. EnergyPlus v9.4 should be installed in advanced.
+The most straightforward way is using the `install_eplus()` function in the
+{eplusr} package. You can install EnergyPlus v9.4 using the code blow:
+
+```{r install-eplus-all, eval = FALSE}
+# install EnergyPlus for all users
+# NOTE: administrative privileges required
+eplusr::install_eplus(9.4)
+
+# OR install EnergyPlus for current user
+eplusr::install_eplus(9.4, local = TRUE)
+```
+
+By default, it will install EnergyPlus in the default location, which is:
+
+- `C:\EnergyPlusVX-Y-0` on Windows
+- `/Applications/EnergyPlus-X-Y-0` on macOS
+- `/usr/local/EnergyPlus-X-Y-0` on Linux
+
+where `X-Y-0` is the EnergyPlus version you want to install, e.g. `9-4-0`.
+
+Please note that writing to those locations will require **administrative
+privileges** on Windows and **superuser privileges** (`sudo`) on macOS and
+Linux.
+
+If you want to install EnergyPlus only for your self, you can do it by
+setting `local` to `TRUE` (`FALSE` is the default):
+
+```{r install-eplus-local, eval = FALSE}
+# install EnergyPlus for current user
+eplusr::install_eplus(9.4, local = TRUE)
+eplusr::avail_eplus()
+```
+
+The user level EnergyPlus installation path is:
+
+- `%LOCALAPPDATA%\EnergyPlusVX-Y-0` on Windows
+- `~/Applications/EnergyPlus-X-Y-0`on macOS
+- `~/.local/EnergyPlus-X-Y-0` on Linux
+
+When loaded, the {eplusr} package will search both installation locations of
+user level and system level, with the former one taking precedence.
+
+If you have install EnergyPlus v9.4 in a custom location other than the two
+above, there is no need to reinstall it. {eplusr} can let you specify that
+location using the `use_eplus()` function. Details will be given in [Parametric simulations].
+
+## LaTeX {-}
+
+This guide contains a [chapter][Literate programming] on writing a simple academic
+manuscript using [R Markdown](xie2018markdown) with the
+[Elsevier LaTeX template](https://www.elsevier.com/authors/policies-and-guidelines/latex-instructions).
+LaTeX is needed for compiling PDF from R Markdown. If you don't have LaTeX
+installed, considering install `TinyTeX` [@xie2019tinytex], a lightweight (~61Mb
+on macOS/Linux and <100Mb on Windows) LaTeX distribution based on TeX Live with
+a feature of automatically installing missing packages during compiling.  You
+can install `TinyTeX` using the {tinytex} pacakge by running the code below:
+
+```{r tinytex, eval = FALSE}
+tinytex::install_tinytex()
+```
+
+## Docker {-}

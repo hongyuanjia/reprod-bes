@@ -1,0 +1,5 @@
+# Computational environment {#renv}
+
+- {renv} `init()`, `record()`
+- eplusr-docker?
+- Docker

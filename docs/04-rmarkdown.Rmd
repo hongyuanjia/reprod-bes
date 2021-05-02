@@ -1,0 +1,6 @@
+# Literate programming {#rmarkdown}
+
+- Elsevier LaTeX template via {rticles}
+- GitHub hosted book?
+- `inst/template/markdown`?
+- {distill}
