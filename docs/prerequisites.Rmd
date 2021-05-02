@@ -131,3 +131,40 @@ tinytex::install_tinytex()
 ```
 
 ## Docker {-}
+
+This guide uses [Docker](https://www.docker.com/) [@merkel2014docker] to create
+isolated, explict computational environments for building energy simulation.
+
+Docker is a large topic. This guide will only focus on the key concepts and the
+minimal steps to create Docker images and run containers.
+
+To install Docker, follow the instructions specific to your operating system:
+
+* [Docker Desktop for Windows](https://docs.docker.com/docker-for-windows/install/)
+* [Docker Desktop for macOS](https://docs.docker.com/docker-for-mac/install/)
+* [Docker engine for Linux](https://docs.docker.com/engine/install/)
+
+For Windows users, please check if the
+[system requirements](https://docs.docker.com/docker-for-windows/install/#system-requirements)
+are met, especially the minimal Windows version requirements (Windows 10 64-bit
+version 1903 with Build 18362). You can check your current Windows version by
+pressing `Win + R`, typing `winver` and pressing `Enter`.
+Another requirement of enabling the WSL2
+(Windows Subsystem for Linux version 2) can be achieved by opening PowerShell as
+Administrator (Press `Win + X` and select `Windows Powershell (Admin)`) and
+running the following command.
+
+```powershell
+dism.exe /online /enable-feature /featurename:Microsoft-Windows-Subsystem-Linux /all /norestart
+```
+
+It is suggested to read through the RStudio
+[Docker 101 for Data Scientists](https://environments.rstudio.com/docker.html)
+short page to get a rough idea about Doker and its key concepts. You may also
+find the official [Docker Get started](https://docs.docker.com/get-started/)
+documentation useful.
+
+If you encounter problems when installing Docker, you can still proceed with
+this guide to learn how to write the `Dockerfile` for your research compendium.
+However, you will not be able to actual build your images and run containers.
+
