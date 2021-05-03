@@ -48,15 +48,20 @@ biblio-style: unsrtnat
 header-includes:
   - \biboptions{sort&compress}
   - \hypersetup{bookmarksnumbered=true}
+
 output:
+  # distill HTML output
   distill::distill_article:
     toc: true
     toc_float: true
-    toc_depth: 2
+    self_contained: false
+  # PDF output
   bookdown::pdf_book:
     base_format: rticles::elsevier_article
     keep_tex: true
     citation_package: natbib
+
+# RStudio Visual Editor options
 editor_options:
   markdown:
     wrap: 80
