@@ -37,7 +37,7 @@ if (knitr::is_latex_output()) {
 
 # Welcome {-}
 
-Welcome to the Reproducing building simulations using R by [Hongyuan Jia](http://hongyuanjia.me).
+Welcome to the Reproducing building simulations using R by [Hongyuan Jia](https://hongyuanjia.me).
 
 In this guide you'll learn how to use R-package-style file structure to create a
 research compendium for building energy simulations using R.
@@ -47,11 +47,15 @@ knitr::include_graphics("images/cover.png")
 ```
 
 This guide is still work-in-progress. It heavily leans on a collection of
-various open-source books, reports, papers and manuals, including:
+various open-source books, reports, papers and manuals, including but not
+exhaustive:
 
-* rOpenSci Reproducibility Guide [@ropensci2018reproducibility]
-* R Packages book [@wickham2015packages]
-* Reproducible computation at scale in R with {targets} toturial [@landau2021reproducible]
+* [rOpenSci](https://ropensci.org/)
+  [Reproducibility Guide](https://ropensci.github.io/reproducibility-guide/)
+  [@ropensci2018reproducibility]
+* [R Packages](https://r-pkgs.org/) book [@wickham2015packages]
+* [Reproducible computation at scale in R with {targets}](https://github.com/wlandau/targets-tutorial)
+  toturial [@landau2021reproducible]
 * {usethis}
   [*Setup*](https://usethis.r-lib.org/articles/articles/usethis-setup.html) and
   [*Managing Git(Hub) Credentials*](https://usethis.r-lib.org/articles/articles/git-credentials.html)
@@ -59,9 +63,12 @@ various open-source books, reports, papers and manuals, including:
 * {eplusr}
   [*Parametric simulations*](https://hongyuanjia.github.io/eplusr/articles/param.html)
   vignette [@jia2021eplusr]
-* R Markdown: The Definitive Guide book [@xie2018markdown]
+* [R Markdown: The Definitive Guide](https://bookdown.org/yihui/rmarkdown/) book
+  [@xie2018markdown]
 * {renv} [*Introduction to {renv}*](https://rstudio.github.io/renv/articles/renv.html)
   vignette [@ushey2021renv]
+* rOpenSci [R Docker tutorial](https://ropenscilabs.github.io/r-docker-tutorial/)
+  and RStudio [Docker 101 for Data Scientists](https://environments.rstudio.com/docker.html).
 
 ## License {-}
 
