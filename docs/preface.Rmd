@@ -7,11 +7,12 @@
   file structure of research compendium using {usethis} from stretch.
 
 * Chapter 3, *[Parametric simulations]*, demonstrates a workflow of parametric
-  building energy simulation using EnergyPlus via {eplusr} and data analytics
-  using {tidyverse}
+  building energy simulations using EnergyPlus via {eplusr} and data analytics
+  using {tidyverse}.
 
-* Chapter 4, *[Literate programming]*, shows an example of drafting a simple
-  manuscript using the Elsevier LaTeX template via {rticles}
+* Chapter 4, *[Literate programming]*, shows an example of authoring a simple
+  manuscript using the Elsevier LaTeX template via {rticles} and using webpage
+  via {distill}.
 
 * Chapter 5, *[Workflow automation]*, demonstrates the power of the {targets}
   package on automating reproducible workflow in a Make-like pipeline.
@@ -19,5 +20,5 @@
 * Chapter 6, *[Computational environment]*, lists necessary steps to capturing the
   computational environment using {renv} and Docker.
 
-* Chapter 7, *[Sharing the compendium]*, gives suggestions on how to sharing your
-  search compendium using GitHub.
+* Chapter 7, *[Sharing the compendium]*, gives suggestions on the licensing and
+  how to sharing your search compendium using GitHub and other web services.
