@@ -6,7 +6,7 @@ bookdown::gitbook:
       collapse: section
       before: |
         <li><strong><a href="./">Reproducing building simulations using R</a></strong></li>
-    edit: https:://github.com/hongyuanjia/reprod-bes/edit/master/docs/%s
+    edit: https://github.com/hongyuanjia/reprod-bes/edit/master/docs/%s
     download: ["pdf", "epub"]
     sharing:
       github: yes
