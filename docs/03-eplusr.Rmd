@@ -7,7 +7,7 @@ usethis::proj_set(projpath)
 if (is.null(getOption("knitr.in.progress"))) setwd(wd)
 ```
 
-```{r init-eplus, include = FALSE}
+```{r init-eplus, eval = FALSE, include = FALSE}
 if (!eplusr::is_avail_eplus(9.4)) eplusr::install_eplus(9.4, local = TRUE)
 ```
 
