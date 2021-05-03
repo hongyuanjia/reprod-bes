@@ -7,12 +7,12 @@ everyone setup, so some things are needed in advance.
 
 ## R, RStudio and package dependencies {-}
 
-This guide assumes you use R and RStudio as the IDE
+This guide assumes you use R and RStudio as its IDE
 ([Integrated Development Environment](https://en.wikipedia.org/wiki/Integrated_development_environment)).
 Please install them using the link below:
 
-* R: https://www.r-project.org
-* RStudio (>= 1.4): https://rstudio.com/products/rstudio/download/#download
+* R project [website](https://www.r-project.org)
+* RStudio [download page](https://rstudio.com/products/rstudio/download/#download) (>= 1.4)
 
 All R package dependencies used in this guide can be installed via:
 
@@ -21,10 +21,9 @@ install.packages("pak", repos = "https://r-lib.github.io/p/pak/dev")
 pak::pkg_install("hongyuanjia/reprod-bes")
 ```
 
-This guide will teach you how to create a research compendium using R. So basic
-knowledge of R programming is preferred. No need to be proficient in R, but you
-need to know some R basics, including basic data types, flow controls and
-functions.
+Basic knowledge of R programming is preferred. No need to be proficient in R,
+but you need to know some R basics, including basic data types, flow controls
+and functions.
 
 There are many excellent R programming tutorials on the internet. One of them is
 the [beginner materials](https://education.rstudio.com/learn/beginner/) provided
@@ -59,7 +58,8 @@ chapter in the free online book
 by
 [Jenny Bryan](https://jennybryan.org/).
 
-For those who did not have a GitHub account, follow the instructions in the
+For those who did not have a GitHub account, register one by following the
+instructions in the
 [Register a GitHub account](https://happygitwithr.com/github-acct.html)
 chapter in the same book above.
 
@@ -68,17 +68,14 @@ chapter in the same book above.
 This guide uses the U.S. Department of Energy (DOE) medium office reference
 building model [@field2010using] distributed together with
 [EnergyPlus](https://www.energyplus.net/) for conducting parametric
-building energy simulations. EnergyPlus v9.4 should be installed in advanced.
-The most straightforward way is using the `install_eplus()` function in the
-{eplusr} package. You can install EnergyPlus v9.4 using the code blow:
+building energy simulations. EnergyPlus v9.4 should be installed in advance.
+The most straightforward way to do it is using the `install_eplus()` function in
+the {eplusr} package by running the code blow:
 
 ```{r install-eplus-all, eval = FALSE}
 # install EnergyPlus for all users
 # NOTE: administrative privileges required
 eplusr::install_eplus(9.4)
-
-# OR install EnergyPlus for current user
-eplusr::install_eplus(9.4, local = TRUE)
 ```
 
 By default, it will install EnergyPlus in the default location, which is:
@@ -94,12 +91,11 @@ privileges** on Windows and **superuser privileges** (`sudo`) on macOS and
 Linux.
 
 If you want to install EnergyPlus only for your self, you can do it by
-setting `local` to `TRUE` (`FALSE` is the default):
+setting `local` to `TRUE` (`FALSE` is the default) when calling `install_eplus()`:
 
 ```{r install-eplus-local, eval = FALSE}
 # install EnergyPlus for current user
 eplusr::install_eplus(9.4, local = TRUE)
-eplusr::avail_eplus()
 ```
 
 The user level EnergyPlus installation path is:
@@ -111,9 +107,18 @@ The user level EnergyPlus installation path is:
 When loaded, the {eplusr} package will search both installation locations of
 user level and system level, with the former one taking precedence.
 
-If you have install EnergyPlus v9.4 in a custom location other than the two
-above, there is no need to reinstall it. {eplusr} can let you specify that
-location using the `use_eplus()` function. Details will be given in [Parametric simulations].
+If you prefer a more customized installation, you can download EnergyPlus
+installer by running the code blow and manually install EnergyPlus by following
+the [instructions](https: //energyplus.net/installation-linux):
+
+```{r download-eplus, eval = FALSE}
+eplusr::download_eplus(9.4)
+```
+
+If you have already installed EnergyPlus v9.4 in a custom location other than
+the two above, there is no need to reinstall it. {eplusr} can let you specify
+that location using the `use_eplus()` function. Details will be given in
+[Parametric simulations].
 
 ## LaTeX {-}
 
@@ -123,7 +128,7 @@ manuscript using [R Markdown](xie2018markdown) with the
 LaTeX is needed for compiling PDF from R Markdown. If you don't have LaTeX
 installed, considering install `TinyTeX` [@xie2019tinytex], a lightweight (~61Mb
 on macOS/Linux and <100Mb on Windows) LaTeX distribution based on TeX Live with
-a feature of automatically installing missing packages during compiling.  You
+a feature of automatically installing missing packages during compiling. You
 can install `TinyTeX` using the {tinytex} pacakge by running the code below:
 
 ```{r tinytex, eval = FALSE}
@@ -164,7 +169,8 @@ short page to get a rough idea about Doker and its key concepts. You may also
 find the official [Docker Get started](https://docs.docker.com/get-started/)
 documentation useful.
 
-If you encounter problems when installing Docker, you can still proceed with
-this guide to learn how to write the `Dockerfile` for your research compendium.
-However, you will not be able to actual build your images and run containers.
+If you encounter problems when installing Docker, you will still be able to
+proceed with this guide to learn how to write the `Dockerfile` for your research
+compendium. However, you will not be able to actual build your Docker images and
+run containers.
 
