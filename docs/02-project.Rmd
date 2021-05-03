@@ -228,7 +228,7 @@ We will fill out other contents like description, citation, license and etc in
 
 ## Overview of current files
 
-```{r pkg-files, echo = FALSE, out.width = "100%"}
+```{r pkg-files, echo = FALSE}
 knitr::include_graphics("images/init_meta.png")
 ```
 

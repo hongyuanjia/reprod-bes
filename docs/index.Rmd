@@ -24,10 +24,10 @@ options(digits = 3, width = 68, str = strOptions(strict.width = "cut"))
 knitr::opts_chunk$set(
     comment = "#>",
     collapse = TRUE,
-    fig.align = "center"
+    fig.align = "center",
+    out.width = "100%",
+    width = 68
 )
-
-knitr::opts_chunk$set(width = 68)
 
 if (knitr::is_latex_output()) {
     options(crayon.enabled = FALSE)
