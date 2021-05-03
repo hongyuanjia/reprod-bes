@@ -18,6 +18,25 @@ hands-on R programming exercises.
 There is a dedicated [guide](https://reprod-bes.hongyuanjia.me/) that should be
 used along with this workshop.
 
+## Prerequisites
+
+This workshop is meant to be hands-on and interactive. This means you have the
+option of installing the software and playing with it during the workshop.
+But it is still strongly preferred not to spend time getting everyone setup.
+Here list all software requirements expect for R package dependencies:
+
+* R
+* RStudio
+* Git
+* EnergyPlus
+* LaTeX
+* Docker
+
+Instructions on the installation of all required software and R packages can be
+found in the guide's
+[Prerequisites](https://reprod-bes.hongyuanjia.me/prerequisites.html)
+chapter.
+
 ## Schedule
 
 This schedule budgets time for a 4-hour iteration of the workshop (1 PM to 5 PM).
