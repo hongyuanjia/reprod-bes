@@ -17,7 +17,7 @@ Please install them using the link below:
 All R package dependencies used in this guide can be installed via:
 
 ```{r install, eval = FALSE}
-install.packages("pak")
+install.packages("pak", repos = "https://r-lib.github.io/p/pak/dev")
 pak::pkg_install("hongyuanjia/reprod-bes")
 ```
 
