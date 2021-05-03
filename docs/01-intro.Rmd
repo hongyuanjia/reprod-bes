@@ -74,7 +74,7 @@ Taken together, these are three key components for a reproducible BES:
 
 ```{r dev-pkg, fig.cap = "R Packages for package development", fig.show = "hold", out.width = "10%", echo = FALSE}
 knitr::include_graphics(c(
-    "images/devtools.svg",
+    "images/devtools.png",
     "images/roxygen2.png",
     "images/testthat.png",
     "images/usethis.png"
