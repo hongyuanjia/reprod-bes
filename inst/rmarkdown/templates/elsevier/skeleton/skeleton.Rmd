@@ -28,7 +28,7 @@ keywords:
 date: "`r Sys.Date()`"
 
 journal: "An awesome journal"
-# citation data for distill output:
+# citation data for Distill output:
 # volume: 10
 # issue: 4
 # doi: "10.23915/distill.00010"
@@ -36,8 +36,12 @@ journal: "An awesome journal"
 # citation_url: https://Your/URL
 
 bibliography: references.bib
-# bibliography style for distill output
+
+# Distill output
+# bibliography style
 csl: elsevier-with-titles.csl
+# whether to add a PDF download link in the dritill output
+download: true
 
 # PDF output
 linenumbers: true
@@ -50,7 +54,7 @@ header-includes:
   - \hypersetup{bookmarksnumbered=true}
 
 output:
-  # distill HTML output
+  # Distill output
   distill::distill_article:
     toc: true
     toc_float: true
@@ -98,6 +102,10 @@ options(knitr.table.format = function() {
 })
 
 library(ggplot2)
+```
+
+```{r eval = isTRUE(rmarkdown::metadata$download) && knitr::is_html_output()}
+knitr::asis_output('<a href="paper.pdf"><b>[&#x21b7; Download PDF]</b></a>')
 ```
 
 # Highlights {.unnumbered}
