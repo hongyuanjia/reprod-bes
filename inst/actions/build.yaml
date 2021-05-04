@@ -12,7 +12,8 @@ jobs:
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      RMD_PATH: ./analysis/paper/paper.Rmd
+      # GIVE THE PATH OF YOUR PAPER HERE
+      RMD_PATH: analysis/paper/paper.Rmd
     steps:
       - name: Checkout repo
         uses: actions/checkout@v2
@@ -47,5 +48,6 @@ jobs:
         uses: crazy-max/ghaction-github-pages@v2
         with:
           target_branch: gh-pages
-          build_dir: ./analysis/paper
+          # GIVE THE DIRECTORY OF YOUR PAPER HERE
+          build_dir: analysis/paper
           jekyll: false
