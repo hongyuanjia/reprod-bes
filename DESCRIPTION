@@ -29,3 +29,5 @@ Imports:
     targets,
     tinytex,
     usethis
+Depends: 
+    tidyverse
