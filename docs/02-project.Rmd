@@ -155,11 +155,11 @@ create_project("~/ReprodBES", rstudio = true)
 create_project(projpath, rstudio = TRUE, open = FALSE)
 ```
 
-Remember to toggle the `Show Hidden Files` option in the `Files` pane to see all
-files, including hidden ones.
+Remember to toggle the **`Show Hidden Files`** option in the `Files` pane to see
+all files, including hidden ones.
 
-In \@ref(fig:init-proj), except the `R` folder which you may have already known
-the usage of it in [R-package-style file structure], the other three are:
+In Fig. \@ref(fig:init-proj), except the `R` folder which you may have already
+known the usage of it in [R-package-style file structure], the other three are:
 
 - `ReprodBES.Rproj`: the RStudio project file which contains project-specific
   RStudio settings:
@@ -310,20 +310,20 @@ We will add details about description, citation, license and etc in Chapter
 After the above steps, the file structure of our project looks like this (Fig.
 \@ref(fig:pkg-files)):
 
-```{r pkg-files, echo = FALSE}
+```{r pkg-files, echo = FALSE, fig.cap = "Overview of project file structure"}
 knitr::include_graphics("images/init_meta.png")
 ```
 
-Your RStudio `Git` pane will look like Fig. \@ref(fig:git-pane)
+Your RStudio `Git` pane will look like Fig. \@ref(fig:git-pane).
 
-```{r git-pane, echo = FALSE}
+```{r git-pane, echo = FALSE, fig.cap = "RStudio `Git` pane"}
 knitr::include_graphics("images/git_pane.png")
 ```
 
 If you are using GitKraken, the workspace will look similar like Fig.
-\@ref(fig:gitkraken)
+\@ref(fig:gitkraken).
 
-```{r gitkraken, echo = FALSE}
+```{r gitkraken, echo = FALSE, fig.cap = "GitKraken workspace overview"}
 knitr::include_graphics("images/gitkraken.png")
 ```
 
