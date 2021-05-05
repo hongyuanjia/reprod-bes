@@ -50,7 +50,8 @@ here <- function(...) proj_path(...)
 ```
 
 Also, in order to perform building energy simulation, EnergyPlus v9.4 is needed.
-If you havn't install it yet, please follow the instructions [here](EnergyPlus).
+If you havn't install it yet, please follow the instructions in [Prerequisites][EnergyPlus]
+chapter.
 
 If you installed EnergyPlus in the default location, {eplusr} should be able to
 find it. You can check by running the code blow:
@@ -112,7 +113,7 @@ file_copy(
     overwrite = TRUE
 )
 
-dir_ls("data-raw")
+dir_ls(here("data-raw"))
 ```
 
 ## Run parametric simulation
