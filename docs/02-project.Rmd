@@ -22,7 +22,7 @@ vignette and the free online book [Happy Git and GitHub for the useR](https:
 
 Before getting started, please open RStudio and follow the guide
 [here](https://rstats.wtf/save-source.html#always-start-r-with-a-blank-slate)
-in the free only book [What They Forgot to Teach You About R](https://rstats.wtf/)
+in the free online book [What They Forgot to Teach You About R](https://rstats.wtf/)
 [@bryan2021what] to ensure that R always starts with a blank slate.
 
 This chapter focusses on {usethis}, a workflow package that automates repetitive
