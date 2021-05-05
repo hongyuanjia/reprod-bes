@@ -245,14 +245,6 @@ Most importantly, `DESCRIPTION` is a defining feature of an R package. R
 cosiders any directory containing `DESCRIPTION` to be a package and enables you
 to use a rich set of tools to ease the project development process.
 
-Every package must have a DESCRIPTION. In fact, it’s the defining feature of a
-package (RStudio and devtools consider any directory containing DESCRIPTION to
-be a package). To get you started, usethis::create_package("mypackage")
-automatically adds a bare-bones description file. This will allow you to start
-writing the package without having to worry about the metadata until you need
-to. The minimal description will vary a bit depending on your settings, but
-should look something like this:
-
 `usethis::use_description()` will create an `DESCRIPTION`. Fields like `Author`,
 `License` will be automatically filled based on the `.Rprofile` settings.
 You can update the `Title` and `Description` fields if you want. For this
