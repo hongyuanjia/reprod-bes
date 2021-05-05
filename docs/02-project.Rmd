@@ -163,8 +163,8 @@ known the usage of it in [R-package-style file structure], the other three are:
 
 - `ReprodBES.Rproj`: the RStudio project file which contains project-specific
   RStudio settings:
-```{r, echo = FALSE}
-readLines(with_project(projpath, proj_path("ReprodBES.Rproj")))
+```{r}
+readLines(with_project(projpath, proj_path("ReprodBES.Rproj"), quiet = TRUE))
 ```
 
 - `.Rproj.user/`: a directory to store project-specific temporary files for
@@ -222,11 +222,11 @@ use_git()
 ```
 
 ```{r init-git, eval = create, include = FALSE}
-with_project(projpath, use_git())
+with_project(projpath, use_git(), quiet = TRUE)
 
 # mimick the git commit process usethis::use_git() does in an interactive
 # session
-with_project(projpath, {
+with_project(projpath, quiet = TRUE, {
     stat <- gert::git_status()
     paths <- stat[stat$status == "new", "file", drop = TRUE]
     gert::git_add(paths)
@@ -263,7 +263,7 @@ use_description()
 ```
 
 ```{r init-desc, eval = create, echo = FALSE}
-with_project(projpath, use_description())
+with_project(projpath, use_description(), quiet = TRUE)
 ```
 
 ## Create `LICENSE`
@@ -283,7 +283,7 @@ use_mit_license("Hongyuan Jia")
 ```
 
 ```{r init-license, eval = create, echo = FALSE}
-with_project(projpath, use_mit_license("Hongyuan Jia"))
+with_project(projpath, use_mit_license("Hongyuan Jia"), quiet = TRUE)
 ```
 
 ## Create `README.md`
@@ -299,7 +299,7 @@ use_readme_md()
 ```
 
 ```{r init-readme, eval = create, echo = FALSE}
-with_project(projpath, use_readme_md())
+with_project(projpath, use_readme_md(), quiet = TRUE)
 ```
 
 We will add details about description, citation, license and etc in Chapter
