@@ -141,8 +141,8 @@ edit_file(here("analysis/eda.R"))
 ```
 
 Copy the code blow to `analysis/eda/R` and run it by clicking
-![](images/btn_source.png?display=inline-block) or pressing
-`Ctrl + Shift + Enter`.
+![](images/btn_source.png){#id width=10% style="vertical-align:middle;width:10%" display=inline-block}
+or pressing `Ctrl + Shift + Enter`.
 
 ```{r init-job, out.lines = 10}
 path_idf <- here("data-raw/RefBldgMediumOfficeNew2004_Chicago.idf")
@@ -263,15 +263,37 @@ knitr::include_graphics("images/mdd.png")
 
 `$rdd()` method
 
-```{r read-rdd}
+```{r read-rdd, eval = FALSE}
 job$read_rdd()
+```
+
+```{r read-rdd-tbl, echo = FALSE}
+rdd <- job$read_rdd()
+
+if (!knitr::is_latex_output()) {
+    rmarkdown::paged_table(head(rdd, 10))
+} else {
+    knitr::kable(head(rdd, 10), booktabs = TRUE, linesep = "")
+}
+
 ```
 
 `$mdd()` method
 
-```{r read-mdd}
+```{r read-mdd, eval = FALSE}
 job$read_mdd()
 ```
+
+```{r read-mdd-tbl, echo = FALSE}
+mdd <- job$read_mdd()
+
+if (!knitr::is_latex_output()) {
+    rmarkdown::paged_table(head(mdd, 10))
+} else {
+    knitr::kable(head(mdd, 10), booktabs = TRUE, linesep = "")
+}
+```
+
 
 `rdd_to_load()` and `mdd_to_load()`
 
@@ -323,7 +345,21 @@ job$tabular_data(
     report_for = "Entire Facility",
     table_name = "Site and Source Energy"
 )
+```
 
+
+```{r tabular-eui-data-tbl}
+eui <- job$tabular_data(
+    report_name = "AnnualBuildingUtilityPerformanceSummary",
+    report_for = "Entire Facility",
+    table_name = "Site and Source Energy"
+)
+
+if (!knitr::is_latex_output()) {
+    rmarkdown::paged_table(eui)
+} else {
+    knitr::kable(head(rdd, 10), booktabs = TRUE, linesep = "")
+}
 ```
 
 You may find that the table format you get using `$tabular_data()` is different
@@ -386,6 +422,7 @@ Fig. \@ref(fig:csv-excel) gives an example of the report variable and meter outp
         - Variable Name: `Site Outdoor Air Humidity Ratio`
         - Unit: `kgWater/kgDryAir`
         - Reporting Frequency: `Hourly`
+
      While this compact column format provides efficient storage for completely
      crossed designs, it makes hard to perform operations like filtering
      variable names. Additional data cleaning efforts are needed to work with
@@ -412,7 +449,7 @@ the semantics of simulation output.  This format can facilitate initial
 exploration and analysis of data and to simplify the development of data
 analysis tools that work well together [@wickham2014tidy].
 
-```{r tidy-format, echo = FALSE, fig.cap = "EnergyPlus output data in Tidy format"}
+```{r tidy-format, echo = FALSE, out.width = "70%", fig.cap = "EnergyPlus output data in Tidy format"}
 knitr::include_graphics("images/tidy-format.png")
 ```
 
@@ -467,11 +504,11 @@ temp <- job$report_data(
 
 #### Energy comsumption contributions
 
-```{r}
+```{r, out.width = "30%"}
 knitr::include_graphics("images/building_area.png")
 ```
 
-```{r}
+```{r, out.width = "30%"}
 knitr::include_graphics("images/end_use.png")
 ```
 
