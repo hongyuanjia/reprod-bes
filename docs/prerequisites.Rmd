@@ -63,6 +63,15 @@ instructions in the
 [Register a GitHub account](https://happygitwithr.com/github-acct.html)
 chapter in the same book above.
 
+There is an *optional but highly recommended* step: **install a Git client**.
+Learning to use version control can be tough at first. Using a GUI (Graphical
+User Interface) can be extremely helpful when getting started. The command line
+interface may be not appealing for everyone.
+Git and your Git client are not the same thing, just like R and RStudio are not
+the same thing. A Git client can be treated as a Git IDE. @bryan2021happy
+recommended several [Git client](https://happygitwithr.com/git-client.html#recommended-git-clients).
+Among them, I personally highly recommend [GitKraken](https://www.gitkraken.com/).
+
 ## EnergyPlus {-}
 
 This guide uses the U.S. Department of Energy (DOE) medium office reference
@@ -109,7 +118,7 @@ user level and system level, with the former one taking precedence.
 
 If you prefer a more customized installation, you can download EnergyPlus
 installer by running the code blow and manually install EnergyPlus by following
-the [instructions](https: //energyplus.net/installation-linux):
+the [instructions](https://energyplus.net/installation-linux):
 
 ```{r download-eplus, eval = FALSE}
 eplusr::download_eplus(9.4)
