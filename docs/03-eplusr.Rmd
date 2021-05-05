@@ -2,11 +2,9 @@
 
 ```{r include = FALSE}
 usethis::proj_set(projpath)
-# setwd(projpath)
-# if (is.null(getOption("knitr.in.progress"))) setwd(wd)
 ```
 
-```{r init-eplus, eval = FALSE, include = FALSE}
+```{r init-eplus, include = FALSE}
 if (!eplusr::is_avail_eplus(9.4)) eplusr::install_eplus(9.4, local = TRUE)
 ```
 
@@ -23,7 +21,7 @@ and EnergyPlus. For that, please check {eplusr}
 [*Introduction to eplusr*](https://hongyuanjia.github.io/eplusr/articles/eplusr.html)
 and other materials.
 
-The main focuses of this chapter are 
+The main focuses of this chapter are:
 
 1.  creating parametric models by applying measures and
 2.  easing the comparative analysis by reusing code snippets developed in data exploration process.
@@ -107,7 +105,7 @@ path_weather <- path(dir_eplus, "WeatherData/USA_IL_Chicago-OHare.Intl.AP.725300
 
 We can copy them to the `data-raw` directory we just created by running:
 
-```{r copy-raw-input-fake, eval = FALSE}
+```{r copy-raw-input}
 file_copy(
     path = c(path_model, path_weather),
     new_path = here("data-raw", path_file(c(path_model, path_weather))),
@@ -115,23 +113,6 @@ file_copy(
 )
 
 dir_ls("data-raw")
-```
-
-```{r copy-raw-input, echo = FALSE}
-with_project(projpath, {
-
-file_copy(
-    path = c(path_model, path_weather),
-    new_path = path("data-raw", path_file(c(path_model, path_weather))),
-    overwrite = TRUE
-)
-
-(inputs <- dir_ls("data-raw"))
-
-})
-
-path_idf <- with_project(projpath, proj_path(inputs[1]))
-path_epw <- with_project(projpath, proj_path(inputs[2]))
 ```
 
 ## Run parametric simulation
@@ -206,67 +187,70 @@ calling:
 job <- idf$last_job()
 ```
 
-## Main EnergyPlus outputs
+### Main EnergyPlus outputs
 
-You can open the output directory by running:
+You can open the output directory by running
 
 ```{r, eval = FALSE}
 job$output_dir(open = TRUE)
 ```
 
-The contents of the folder look like Fig. \@ref(fig:output-dir).
-
 ```{r output-dir, fig.cap = "EnergyPlus simulation outputs", echo = FALSE}
 knitr::include_graphics("images/output_dir.png")
 ```
 
-Others can be found in [Output Details and Examples](https://bigladdersoftware.com/epx/docs/9-4/output-details-and-examples/index.html "Output Details and Examples").
+Table \@ref(tab:eplus-out) gives a summary of the main outputs from an
+EnergyPlus simulation. For other output formats, you can find the documentation in
+the [Output Details and Examples](https://bigladdersoftware.com/epx/docs/9-4/output-details-and-examples/index.html).
 
-+----------------------+------------------------------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+---------------------------------+
-| Output type          | Name                                     | Output                                                                                                                                                                                                           | Methods related                 |
-+======================+==========================================+==================================================================================================================================================================================================================+=================================+
-| ERR File             | `Model.err`                              | All of the warnings, errors, etc. that occur during the simulation.                                                                                                                                              | `EplusJob$errors()`             |
-+----------------------+------------------------------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+---------------------------------+
-| RDD File             | `Model.rdd`                              | All the report variables along with their **availability** for the current input file.                                                                                                                           | `EplusJob$read_rdd()`           |
-+----------------------+------------------------------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+---------------------------------+
-| MDD File             | `Model.mdd`                              | All the report meters along with their **availability** for the current input file.                                                                                                                              | `EplusJob$read_mdd()`           |
-+----------------------+------------------------------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+---------------------------------+
-| Tabular File         | `ModelTable.htm`, `ModelTable.csv`, etc. | All tabular output results that are created when using the following objects:                                                                                                                                    | `EplusJob$tabular_data()`       |
-|                      |                                          |                                                                                                                                                                                                                  |                                 |
-|                      |                                          | - `Output:Table:SummaryReports`                                                                                                                                                                                  |                                 |
-|                      |                                          | - `Output:Table:TimeBins`                                                                                                                                                                                        |                                 |
-|                      |                                          | - `Output:Table:Monthly`                                                                                                                                                                                         |                                 |
-|                      |                                          | - `UtilityCost:Tariff`                                                                                                                                                                                           |                                 |
-|                      |                                          | - `ComponentCost:Line Item`                                                                                                                                                                                      |                                 |
-+----------------------+------------------------------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+---------------------------------+
-| Report Variable Data | `Model.csv`                              | All report variable results that are created when using the `Output:Variable` object and the objects from `Output:Meter:*` classes without `MeterFileOnly`                                                       | - `EplusJob$report_data_dict()` |
-|                      |                                          |                                                                                                                                                                                                                  | - `EplusJob$report_data()`      |
-+----------------------+------------------------------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+---------------------------------+
-| Report Meter Data    | `ModelMeter.csv`                         | All report meter results that are created when using the following objects:                                                                                                                                      | - `EplusJob$report_data_dict()` |
-|                      |                                          |                                                                                                                                                                                                                  | - `EplusJob$report_data()`      |
-|                      |                                          | - `Output:Meter`                                                                                                                                                                                                 |                                 |
-|                      |                                          | - `Output:Meter:MeterFileOnly`                                                                                                                                                                                   |                                 |
-|                      |                                          | - `Output:Meter:Cumulative`                                                                                                                                                                                      |                                 |
-|                      |                                          | - `Output:Meter:Cumulative:MeterFileOnly`                                                                                                                                                                        |                                 |
-|                      |                                          | - `Meter:Custom`                                                                                                                                                                                                 |                                 |
-|                      |                                          | - `Meter:CustomDecrement`                                                                                                                                                                                        |                                 |
-+----------------------+------------------------------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+---------------------------------+
-| SQLite File          | `Model.sql`                              | SQLite database that includes all of the data found in the `MeterTable.html`, `Model.csv` and `ModelMeter.csv`, plus a number of other reports. This is also the actual file that {eplusr} uses to extract data. | - `EplusJob$list_table()`       |
-|                      |                                          |                                                                                                                                                                                                                  | - `EplusJob$read_table()`       |
-|                      |                                          |                                                                                                                                                                                                                  | - `EplusJob$report_data_dict()` |
-|                      |                                          |                                                                                                                                                                                                                  | - `EplusJob$report_data()`      |
-|                      |                                          |                                                                                                                                                                                                                  | - `EplusJob$tabular_data()`     |
-+----------------------+------------------------------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+---------------------------------+
+Table: (\#tab:eplus-out) Description on EnergyPlus main outputs
 
-: Description on EnergyPlus main outputs
++----------------------+------------------------------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-----------------------------------+
+| Output type          | Name                                     | Output                                                                                                                                                                                                           | Methods related                   |
++======================+==========================================+==================================================================================================================================================================================================================+===================================+
+| ERR File             | `Model.err`                              | All of the warnings, errors, etc. that occur during the simulation.                                                                                                                                              | `EplusJob$errors()`               |
++----------------------+------------------------------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-----------------------------------+
+| RDD File             | `Model.rdd`                              | All the report variables along with their **availability** for the current input file.                                                                                                                           | `EplusJob$read_rdd()`             |
++----------------------+------------------------------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-----------------------------------+
+| MDD File             | `Model.mdd`                              | All the report meters along with their **availability** for the current input file.                                                                                                                              | `EplusJob$read_mdd()`             |
++----------------------+------------------------------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-----------------------------------+
+| Tabular FIle         | `ModelTable.htm`, `ModelTable.csv`, etc. | All tabular output results that are created when using the following objects:                                                                                                                                    | `EplusJob$tabular_data()`         |
+|                      |                                          |                                                                                                                                                                                                                  |                                   |
+|                      |                                          | -   `Output:Table:SummaryReports`                                                                                                                                                                                |                                   |
+|                      |                                          | -   `Output:Table:TimeBins`                                                                                                                                                                                      |                                   |
+|                      |                                          | -   `Output:Table:Monthly`                                                                                                                                                                                       |                                   |
+|                      |                                          | -   `UtilityCost:Tariff`                                                                                                                                                                                         |                                   |
+|                      |                                          | -   `ComponentCost:Line Item`                                                                                                                                                                                    |                                   |
++----------------------+------------------------------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-----------------------------------+
+| Report Variable Data | `Model.csv`                              | All report variable results that are created when using the `Output:Variable` object and the objects from `Output:Meter:*` classes without `MeterFileOnly`                                                       | -   `EplusJob$report_data_dict()` |
+|                      |                                          |                                                                                                                                                                                                                  | -   `EplusJob$report_data()`      |
++----------------------+------------------------------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-----------------------------------+
+| Report Meter Data    | `ModelMeter.csv`                         | All report meter results that are created when using the following objects:                                                                                                                                      | -   `EplusJob$report_data_dict()` |
+|                      |                                          |                                                                                                                                                                                                                  | -   `EplusJob$report_data()`      |
+|                      |                                          | -   `Output:Meter`                                                                                                                                                                                               |                                   |
+|                      |                                          | -   `Output:Meter:MeterFileOnly`                                                                                                                                                                                 |                                   |
+|                      |                                          | -   `Output:Meter:Cumulative`                                                                                                                                                                                    |                                   |
+|                      |                                          | -   `Output:Meter:Cumulative:MeterFileOnly`                                                                                                                                                                      |                                   |
+|                      |                                          | -   `Meter:Custom`                                                                                                                                                                                               |                                   |
+|                      |                                          | -   `Meter:CustomDecrement`                                                                                                                                                                                      |                                   |
++----------------------+------------------------------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-----------------------------------+
+| SQLite File          | `Model.sql`                              | SQLite database that includes all of the data found in the `MeterTable.html`, `Model.csv` and `ModelMeter.csv`, plus a number of other reports. This is also the actual file that {eplusr} uses to extract data. | -   `EplusJob$list_table()`       |
+|                      |                                          |                                                                                                                                                                                                                  | -   `EplusJob$read_table()`       |
+|                      |                                          |                                                                                                                                                                                                                  | -   `EplusJob$report_data_dict()` |
+|                      |                                          |                                                                                                                                                                                                                  | -   `EplusJob$report_data()`      |
+|                      |                                          |                                                                                                                                                                                                                  | -   `EplusJob$tabular_data()`     |
++----------------------+------------------------------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-----------------------------------+
 
-### ERR file
+#### ERR file
+
+`$errors()` method
+
 
 ```{r errors}
 job$errors()
 ```
 
-### RDD and MDD
+#### RDD and MDD
 
 ```{r rdd-vim, fig.cap = "An example of RDD file"}
 knitr::include_graphics("images/rdd.png")
@@ -276,13 +260,20 @@ knitr::include_graphics("images/rdd.png")
 knitr::include_graphics("images/mdd.png")
 ```
 
-```{r read-rdd, paged.print = knitr::is_html_output()}
-job$read_rdd() %>% head()
+`$rdd()` method
+
+```{r read-rdd}
+job$read_rdd()
 ```
 
-```{r read-mdd, paged.print = knitr::is_html_output()}
-job$read_mdd() %>% head()
+`$mdd()` method
+
+```{r read-mdd}
+job$read_mdd()
 ```
+
+`rdd_to_load()` and `mdd_to_load()`
+
 
 ```{r, eval = FALSE}
 job$read_rdd() %>% rdd_to_load() %>% idf$load()
@@ -290,7 +281,11 @@ job$read_rdd() %>% rdd_to_load() %>% idf$load()
 job$read_mdd() %>% mdd_to_load() %>% idf$load()
 ```
 
-Below gives you an example of adding new output variables into the model. It selects all variables that starts with `People` with a unit of `W` for all people objects (by setting `key_value` to `"*"`) and hourly frequency. Please note that this change will take effect when we save this modified model and rerun the simulation.
+Below gives you an example of adding new output variables into the model. It
+selects all variables that starts with `People` with a unit of `W` for all
+people objects (by setting `key_value` to `"*"`) and hourly frequency. Please
+note that this change will take effect when we save this modified model and
+rerun the simulation.
 
 ```{r load-rdd}
 job$read_rdd() %>%
@@ -299,44 +294,55 @@ job$read_rdd() %>%
     idf$load()
 ```
 
-### Tabular output
+#### Tabular output
 
-You can open the result summary table HTML file and the csv output file by running:
+You can open the result summary table HTML file and the csv output file by
+running:
 
 ```{r open-tabular, eval = FALSE}
 shell(job$locate_output("Table.htm"))
 ```
 
-The tabular output contains quite a lot of tables. Every table has an associated *Report* name, *For* name, *Table* name. Fig. \@ref(fig:tabular-eui) gives the an example of a table in the tabular output. In this case, the *Report* name is `Annual Building Utility Performance Summary`, the *For* name is `Entire Facility`, and the *Table* name is `Site and Source Energy`.
+The tabular output contains quite a lot of tables. Every table has an associated
+*Report* name, *For* name, *Table* name. Fig. \@ref(fig:tabular-eui) gives the
+an example of a table in the tabular output. In this case, the *Report* name is
+`Annual Building Utility Performance Summary`, the *For* name is `Entire
+Facility`, and the *Table* name is `Site and Source Energy`.
 
 ```{r tabular-eui, echo = FALSE, fig.cap = "Site and source energy report from tabular output"}
 knitr::include_graphics("images/eui.png")
 ```
 
-With all this information, we can easily extract the above table using the `$tabluar_data()` method:
+With all this information, we can easily extract the above table using the
+`$tabluar_data()` method:
 
-```{r tabular-eui-data, paged.print = knitr::is_html_output()}
+```{r tabular-eui-data}
 job$tabular_data(
     report_name = "AnnualBuildingUtilityPerformanceSummary",
     report_for = "Entire Facility",
     table_name = "Site and Source Energy"
 )
+
 ```
 
-You may find that the table format you get using `$tabular_data()` is different from what you see in Fig. \@ref(fig:tabular-eui). {eplusr} does this by purpose. The format is a *Tidy* table [@wickham2014tidy] and can streamline the data analysis process when using {tidyverse}. I will demonstrate this later [REF].
+You may find that the table format you get using `$tabular_data()` is different
+from what you see in Fig. \@ref(fig:tabular-eui). {eplusr} does this by purpose.
+The format is a *Tidy* table [@wickham2014tidy] and can streamline the data
+analysis process when using {tidyverse}. I will demonstrate this later [REF].
 
-If you still like to format it in the similar way as Fig. \@ref(fig:tabular-eui), you can do it by setting `wide` to `TRUE`:
+If you still like to format it in the similar way as Fig. \@ref(fig:tabular-eui),
+you can do it by setting `wide` to `TRUE`:
 
-```{r tabular-eui-data-wide, paged.print = knitr::is_html_output()}
+```{r tabular-eui-data-wide}
 job$tabular_data(
     report_name = "AnnualBuildingUtilityPerformanceSummary",
     report_for = "Entire Facility",
     table_name = "Site and Source Energy",
     wide = TRUE
-)[[1]]
+)
 ```
 
-### Report variable and meter outputs
+#### Report variable and meter outputs
 
 You can open the report output by running:
 
@@ -344,76 +350,95 @@ You can open the report output by running:
 shell(job$locate_output(".csv"))
 ```
 
-```{r csv-excel, echo = FALSE, fig.cap = "Report variable and meter outputs in CSV format"}
-knitr::include_graphics("images/report_csv.png")
-```
-
 Fig. \@ref(fig:csv-excel) gives an example of the report variable and meter outputs. There are several things to notice:
 
--   `Date/Time` column starts from `01/21` (January 21th), but not not `01/01` (January 1st). Actually you will find the first occurrence of `01/01` at row 628. This is because EnergyPlus will always report the outputs from the *Design Day* simulation.
+- `Date/Time` column starts from `01/21` (January 21th), but not not `01/01`
+  (January 1st). Actually you will find the first occurrence of `01/01` at
+  row 628. This is because EnergyPlus will always report the outputs from
+  the *Design Day* simulation.
 
--   There are quite a lot missing values. For example, the first non-missing value for outdoor air drybulb temperature is at row 21 with time stamp of `01/21 01:00:00`. This is expected because the reporting frequency for that variable is set to `Hourly`. We can validate this by running:
+- There are quite a lot missing values. For example, the first non-missing
+  value for outdoor air drybulb temperature is at row 21 with time stamp of
+  `01/21 01:00:00`. This is expected because the reporting frequency for that
+  variable is set to `Hourly`. We can validate this by running:
 
-    ```{r, paged.print = knitr::is_html_output()}
+    ```{r}
     idf$to_table(class = "Output:Variable", wide = TRUE) %>%
         filter(`Variable Name` == "Site Outdoor Air Drybulb Temperature")
     ```
     There should be variables with a smaller reporting frequency and values for variables with bigger frequency have to be empty in order to put them in a same table. We can find variables which do not have a `Hourly` reporting frequency by running:
 
-    ```{r, paged.print = knitr::is_html_output()}
+    ```{r}
     idf$to_table(class = "Output:Variable", wide = TRUE) %>%
         filter(str_to_lower(`Reporting Frequency`) != "hourly") %>%
         select(`Variable Name`, `Reporting Frequency`)
     ```
-    We can see that `Performance Curve Output Variable` has a smaller reporting frequency of `detailed`, which means that it will be reported at every HVAC time step.
-    * Several information are concatenated in column headers. For example,  including variable Key Value, Variable Name, Units and Reporting Frequency. Takes the second column `Environment:Site Outdoor Air Humidity Ratio [kgWater/kgDryAir](Hourly)` as an example:
+    We can see that `Performance Curve Output Variable` has a smaller reporting
+    frequency of `detailed`, which means that it will be reported at every HVAC
+    time step.
+
+    * Several information are concatenated in column headers. For example,
+      including variable Key Value, Variable Name, Units and Reporting
+      Frequency. Takes the second column `Environment:Site Outdoor Air Humidity
+      Ratio [kgWater/kgDryAir](Hourly)` as an example:
         - Key Value: `Environment`
         - Variable Name: `Site Outdoor Air Humidity Ratio`
         - Unit: `kgWater/kgDryAir`
         - Reporting Frequency: `Hourly`
-     While this compact column format provides efficient storage for completely crossed designs, it makes hard to perform operations like filtering variable names. Additional data cleaning efforts are needed to work with this structure. And that's exactly the reason why {eplusr} will not directly read EnergyPlus CSV output but instead using the SQLite database which provides much structured data that is easily to process in R.
-    
-### SQLite
+     While this compact column format provides efficient storage for completely
+     crossed designs, it makes hard to perform operations like filtering
+     variable names. Additional data cleaning efforts are needed to work with
+     this structure. And that's exactly the reason why {eplusr} will not
+     directly read EnergyPlus CSV output but instead using the SQLite database
+     which provides much structured data that is easily to process in R.
 
-Table (a) in Fig. \@ref(fig:tidy-format) shows an example of the standard
-format from EnergyPlus CSV table output, while Table (b) gives the tidy
-representation of the same underlying data using {eplusr} tidy data interface.
-In Table (b), values in column headers have been extracted and converted into
-separate columns, and a new variable called `Value` is used to store the
-concatenated data values from the previously separate columns.
-Moreover, instead of presenting date and time as strings in Table (a), the tidy
-data interface splits its components into four new variables, including
-`Month`, `Day`, `Hour` and `Minute`.
-Taken together, Table (b) forms a nine-variable tidy table and each variable
-matches the semantics of simulation output.
-This format can facilitate initial exploration and analysis of data and to simplify the
-development of data analysis tools that work well together [@wickham2014tidy].
+```{r csv-excel, echo = FALSE, fig.cap = "Report variable and meter outputs in CSV format"}
+knitr::include_graphics("images/report_csv.png")
+```
+
+#### SQLite
+
+Table (a) in Fig. \@ref(fig:tidy-format) shows an example of the standard format
+from EnergyPlus CSV table output, while Table (b) gives the tidy representation
+of the same underlying data using {eplusr} tidy data interface.  In Table (b),
+values in column headers have been extracted and converted into separate columns,
+and a new variable called `Value` is used to store the concatenated data values
+from the previously separate columns.  Moreover, instead of presenting date and
+time as strings in Table (a), the tidy data interface splits its components into
+four new variables, including `Month`, `Day`, `Hour` and `Minute`.  Taken
+together, Table (b) forms a nine-variable tidy table and each variable matches
+the semantics of simulation output.  This format can facilitate initial
+exploration and analysis of data and to simplify the development of data
+analysis tools that work well together [@wickham2014tidy].
 
 ```{r tidy-format, echo = FALSE, fig.cap = "EnergyPlus output data in Tidy format"}
 knitr::include_graphics("images/tidy-format.png")
 ```
 
-
-```{r report-data-tdb, paged.print = knitr::is_html_output()}
+```{r report-data-tdb}
 job$report_data(
     name = "Site Outdoor Air Drybulb Temperature",
     month = 7, day = 1:7,
-    day_type = "normalday") %>%
-    head()
+    day_type = "normalday"
+)
 ```
 
-A detailed description on the columns can be found in [doc](https://bigladdersoftware.com/epx/docs/9-4/output-details-and-examples/eplusout-sql.html#reportdatadictionary-table)
+A detailed description on the columns can be found in
+[doc](https://bigladdersoftware.com/epx/docs/9-4/output-details-and-examples/eplusout-sql.html#reportdatadictionary-table)
 
-```{r report-data-dict, paged.print = knitr::is_html_output()}
-head(job$report_data_dict())
+```{r report-data-dict}
+job$report_data_dict()
 ```
 
 ```{r}
 job$list_table()
 ```
-A detailed description on the tables can be found in [doc](https://bigladdersoftware.com/epx/docs/9-4/output-details-and-examples/eplusout-sql.html#eplusout.sql)
 
-You can read a single table using `$read_table()` method. For example, we can read the `Schedules` table by running:
+A detailed description on the tables can be found in
+[doc](https://bigladdersoftware.com/epx/docs/9-4/output-details-and-examples/eplusout-sql.html#eplusout.sql)
+
+You can read a single table using `$read_table()` method. For example, we can
+read the `Schedules` table by running:
 
 ```{r read-table}
 job$read_table("Schedules")
@@ -437,19 +462,19 @@ temp <- job$report_data(
 )
 ```
 
-## Data exploration
+### Data exploration
 
-### Energy comsumption contributions
+#### Energy comsumption contributions
 
-```{r building-area, out.width = "40%"}
-knitr::include_graphics("images/building_area.png")
+```{r}
+knitr::include_graphics("images/area.png")
 ```
 
-```{r end-use, out.width = "40%"}
+```{r}
 knitr::include_graphics("images/end_use.png")
 ```
 
-### Indoor temperature vs Outdoor temperature
+#### Indoor temperature vs Outdoor temperature
 
 ```{r, eval = FALSE}
 library(esquisse)
