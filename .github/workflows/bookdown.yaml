@@ -54,9 +54,11 @@ jobs:
         run: Rscript -e 'setwd("docs"); source("_build.R")'
 
       - name: Install npm
+        if: success()
         uses: actions/setup-node@v1
 
       - name: Deploy to Netlify
+        if: success()
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
