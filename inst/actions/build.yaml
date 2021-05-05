@@ -12,7 +12,6 @@ jobs:
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      # GIVE THE PATH OF YOUR PAPER HERE
       RMD_PATH: analysis/paper/paper.Rmd
     steps:
       - name: Checkout repo
@@ -40,14 +39,32 @@ jobs:
           R -e 'renv::restore()'
 
       - name: Render Rmarkdown file
+        id: render-rmd
         run: |
-          Rscript -e 'f <- commandArgs(TRUE); rmarkdown::render(f, "all", "index")' ${RMD_PATH}
+          Rscript -e 'f <- commandArgs(TRUE); f <- rmarkdown::render(f, "all", "index"); write(gsub(paste0(getwd(), "/"), "", f, fixed = TRUE), "results.txt")' ${RMD_PATH}
+          Rscript -e 'f <- readLines("results.txt"); pdf <- grep(".pdf", f, fixed = TRUE); if (length(pdf)) {paper <- file.path(dirname(f[pdf]), "paper.pdf"); file.rename(f[pdf], paper); f[pdf] <- paper; write(f, "results.txt")}'
+          echo "::set-output name=build_dir::$(Rscript -e 'cat(dirname(commandArgs(TRUE)))' ${RMD_PATH})"
+          echo "::set-output name=html_path::$(cat results.txt | grep .html)"
+          echo "::set-output name=pdf_path::$(cat results.txt  | grep .pdf)"
+
+      - name: Echo
+        run: |
+          echo '${{steps.render-rmd.outputs.build_dir}}'
+          echo '${{steps.render-rmd.outputs.html_path}}'
+          echo '${{steps.render-rmd.outputs.pdf_path}}'
+
+      - name: Upload rendered PDF
+        if: success()
+        uses: actions/upload-artifact@v2
+        with:
+          name: PDF
+          path: ${{steps.render-rmd.outputs.pdf_path}}
 
       - name: Deploy to GitHub Pages
         if: success()
         uses: crazy-max/ghaction-github-pages@v2
         with:
           target_branch: gh-pages
-          # GIVE THE DIRECTORY OF YOUR PAPER HERE
-          build_dir: analysis/paper
+          build_dir: ${{steps.render-rmd.outputs.build_dir}}
           jekyll: false
+          keep_history: true
