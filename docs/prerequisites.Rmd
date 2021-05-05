@@ -68,8 +68,11 @@ Learning to use version control can be tough at first. Using a GUI (Graphical
 User Interface) can be extremely helpful when getting started. The command line
 interface may be not appealing for everyone.
 Git and your Git client are not the same thing, just like R and RStudio are not
-the same thing. A Git client can be treated as a Git IDE. @bryan2021happy
-recommended several [Git client](https://happygitwithr.com/git-client.html#recommended-git-clients).
+the same thing. A Git client can be treated as a Git IDE. RStudio has very basic
+support for Git using their `Git` pane. But for a more pleasant experience
+working with Git, a more powerful Git client is needed. @bryan2021happy
+recommended several
+[Git client](https://happygitwithr.com/git-client.html#recommended-git-clients).
 Among them, I personally highly recommend [GitKraken](https://www.gitkraken.com/).
 
 ## EnergyPlus {-}
