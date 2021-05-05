@@ -98,7 +98,7 @@ if (knitr::is_latex_output()) {
 }
 
 options(knitr.table.format = function() {
-    if (knitr::is_latex_output()) 'latex' else 'pandoc'
+    if (knitr::is_latex_output()) "latex" else "pandoc"
 })
 
 library(ggplot2)
