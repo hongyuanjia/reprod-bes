@@ -32,6 +32,18 @@ knitr::opts_chunk$set(
     attr.source = ".numberLines"
 )
 
+hook_output <- knitr::knit_hooks$get("output")
+knitr::knit_hooks$set(output = function(x, options) {
+    if (!is.null(n <- options$out.lines)) {
+        x <- xfun::split_lines(x)
+        if (length(x) > n) {
+            x <- c(head(x, n/2), "....", tail(x, n/2 + 1))
+        }
+        x <- paste(x, collapse = "\n")
+    }
+    hook_output(x, options)
+})
+
 if (knitr::is_latex_output()) {
     options(crayon.enabled = FALSE)
     options(cli.unicode = TRUE)
