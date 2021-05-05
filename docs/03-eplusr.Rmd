@@ -468,7 +468,7 @@ temp <- job$report_data(
 #### Energy comsumption contributions
 
 ```{r}
-knitr::include_graphics("images/area.png")
+knitr::include_graphics("images/building_area.png")
 ```
 
 ```{r}
