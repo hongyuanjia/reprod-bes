@@ -15,7 +15,8 @@ a compendium for building energy simulation research and demonstrate the
 necessary steps to build up a file structure of research compendium using
 {usethis} [@wickham2021usethis] from stretch. It is based on the {usethis}
 [*Setup*](https://usethis.r-lib.org/articles/articles/usethis-setup.html)
-vignette.
+vignette and the free online book [Happy Git and GitHub for the useR](https:
+//happygitwithr.com/) by @bryan2021happy.
 
 ## Prerequisites
 
@@ -60,15 +61,18 @@ knitr::include_graphics("images/structure.png")
 
 - `data/`: (Optional) Main simulation output for each case and result summary.
 
-- `analysis/`: R Markdown file and BibTeX file.
+- `analysis/`: R Markdown file and BibTeX file. We will focus on this in Chapter
+  [Literate programming].
 
 - `_targets.R`: Defines the workflow using [{targets}](https://github.com/ropensci/targets)
-  package.
+  package. We will build it in Chapter [Workflow automation].
 
 - `renv.lock`: The [{renv}](https://rstudio.github.io/renv/) lockfile,
-  describing the state of libraries used in this project.
+  describing the state of libraries used in this project. It will be created in
+  Chapter [Computational environment].
 
-- `Dockerfile`: Docker image specification.
+- `Dockerfile`: Docker image specification. Same as above, we will work on it in
+  Chapter [Computational environment].
 :::
 
 ::::
@@ -139,21 +143,36 @@ if (!is.null(where)) {
 wd <- getwd()
 ```
 
-```{r create-project-fake, eval = FALSE}
-library(usethis) # for project strcuture creation
+`usethis::create_project()` will create a barebone project structure. A new
+RStudio session will automatically open with active project setting to the
+`ReprodBES` we just created.
 
-create_project("~/ReprodBES", rstudio = TRUE)
+```{r create-project-fake, eval = FALSE}
+create_project("~/ReprodBES", rstudio = true)
 ```
 
 ```{r create-project, eval = create, echo = FALSE}
-library(usethis)
 create_project(projpath, rstudio = TRUE, open = FALSE)
 ```
 
-```{r set-proj-and-wd, eval = create, include = FALSE}
-if (is.null(getOption("knitr.in.progress"))) setwd(wd)
-knitr::opts_knit$set(root.dir = wd)
+Remember to toggle the `Show Hidden Files` option in the `Files` pane to see all
+files, including hidden ones.
+
+In \@ref(fig:init-proj), except the `R` folder which you may have already known
+the usage of it in [R-package-style file structure], the other three are:
+
+- `ReprodBES.Rproj`: the RStudio project file which contains project-specific
+  RStudio settings:
+```{r, echo = FALSE}
+readLines(with_project(projpath, proj_path("ReprodBES.Rproj")))
 ```
+
+- `.Rproj.user/`: a directory to store project-specific temporary files for
+  RStudio (e.g. auto-saved source documents, window-state, etc.)
+
+- `.gitignore`: A plain text file specifying intentionally untracked files to
+  ignore under version control using Git.  You can see {usethis} has already add
+  the `.Rproj.user` folder in it to ignore all files in that folder.
 
 ```{r init-proj, echo = FALSE, fig.cap = "Contents in the initialized project folder"}
 knitr::include_graphics("images/init_proj.png")
@@ -161,16 +180,45 @@ knitr::include_graphics("images/init_proj.png")
 
 ## Setup Git
 
-Configure Git `user.name` and `user.email`
+[Git](http://git-scm.com/) is a **version control system**. Git manages the
+evolution of a set of files – called a **repository** – in a sane, highly
+structured way. Git has been re-purposed by the data science community. It has
+been used to manage the motley collection of files that make up typical data
+analytical projects, which often consist of data, figures, reports, and source
+code. For a more thorough introduction on Git, I highly recommend the free
+online book [Happy Git and GitHub for the useR](https: //happygitwithr.com/) by
+@bryan2021happy. At current stage, we will focus on Git. The integration with
+GitHub will be described in Chapter [Sharing the compendium].
+
+After Git installation, you can set your Git user name and email using
+`usethis::use_git_config()` by running:
 
 ```{r git-config}
 use_git_config(user.name = "Hongyuan Jia", user.email = "hongyuanjia@outlook.com")
 ```
 
-Initialize the project as a Git repository.
+For the email address, it is recommended to set it as the same one associated
+with your GitHub account.
+
+Next, we will use `usethis::use_git()` to initialize the project as a Git
+repository. A interactive prompt will pop up to let you chose whether to commit.
+Select yes.
 
 ```{r init-git-fake, eval = FALSE}
 use_git()
+#> √ Setting active project to '~/ReprodBES'
+#> √ Initialising Git repo
+#> √ Adding '.Rhistory', '.Rdata', '.httr-oauth', '.DS_Store' to '.gitignore'
+#> There are 2 uncommitted files:
+#> * '.gitignore'
+#> * 'ReprodBES.Rproj'
+#> Is it ok to commit them?
+#>
+#> 1: Negative
+#> 2: No
+#> 3: For sure
+#>
+#> Selection:
 ```
 
 ```{r init-git, eval = create, include = FALSE}
@@ -188,47 +236,94 @@ with_project(projpath, {
 
 ## Create `DESCRIPTION`
 
-Create the `DESCRIPTION`. Fields like `Author`, `License` will be automatically
-filled based on the `.Rprofile` settings.
+The job of the DESCRIPTION file is to store important metadata about your
+project. When sharing your project with others, this metadata becomes
+increasingly important because it specifies who can use it (the license) and
+whom to contact if there are any problems.
+
+Most importantly, `DESCRIPTION` is a defining feature of an R package. R
+cosiders any directory containing `DESCRIPTION` to be a package and enables you
+to use a rich set of tools to ease the project development process.
+
+Every package must have a DESCRIPTION. In fact, it’s the defining feature of a
+package (RStudio and devtools consider any directory containing DESCRIPTION to
+be a package). To get you started, usethis::create_package("mypackage")
+automatically adds a bare-bones description file. This will allow you to start
+writing the package without having to worry about the metadata until you need
+to. The minimal description will vary a bit depending on your settings, but
+should look something like this:
+
+`usethis::use_description()` will create an `DESCRIPTION`. Fields like `Author`,
+`License` will be automatically filled based on the `.Rprofile` settings.
+You can update the `Title` and `Description` fields if you want. For this
+example, I will just use the default values.
 
 ```{r init-desc-fake, eval = FALSE}
 use_description()
 ```
 
 ```{r init-desc, eval = create, echo = FALSE}
-with_project(projpath, usethis::use_description())
+with_project(projpath, use_description())
 ```
 
 ## Create `LICENSE`
 
-Create the `LICENSE` file:
+In [Create Description], the `License` has been filled with the one we set using
+{usethis} options. Normally this license defines how others can use our
+**code**. For a description on common open source software licenses, you can
+read [R Packages](https://r-pkgs.org/description.html#description-license) book.
+
+In this guide, we will use this MIT license, a simple and permissive license
+that lets everyone use and freely distribute the code with one one restriction:
+the license must always be distributed with the code. We can create a simple
+license file using `usethis::use_mit_license()` together with your name:
 
 ```{r init-license-fake, eval = FALSE}
 use_mit_license("Hongyuan Jia")
 ```
 
 ```{r init-license, eval = create, echo = FALSE}
-with_project(projpath, usethis::use_mit_license("Hongyuan Jia"))
+with_project(projpath, use_mit_license("Hongyuan Jia"))
 ```
 
 ## Create `README.md`
 
-Create the `README.md` file:
+The `README.md` provides description of contents and guide to users to your
+project. On GitHub, the `README.md` will be rendered as HTML and displayed on
+the repository home page.
+
+We can create a simple `README.md` using `usethis::use_readme_md()` helper:
 
 ```{r init-readme-fake, eval = FALSE}
 use_readme_md()
 ```
 
 ```{r init-readme, eval = create, echo = FALSE}
-with_project(projpath, usethis::use_readme_md())
+with_project(projpath, use_readme_md())
 ```
 
-We will fill out other contents like description, citation, license and etc in
-[REF].
+We will add details about description, citation, license and etc in Chapter
+[Sharing the compendium]. We can leave the `README.md` as it for now.
 
 ## Overview of current files
 
+After the above steps, the file structure of our project looks like this (Fig.
+\@ref(fig:pkg-files)):
+
 ```{r pkg-files, echo = FALSE}
 knitr::include_graphics("images/init_meta.png")
+```
+
+Your RStudio `Git` pane will look like Fig. \@ref(fig:git-pane)
+
+```{r git-pane, echo = FALSE}
+knitr::include_graphics("images/git_pane.png")
+```
+
+If you are using GitKraken, the workspace will look similar like Fig.
+\@ref(fig:gitkraken)
+
+```{r gitkraken, echo = FALSE}
+knitr::include_graphics("images/gitkraken.png")
 ```
 
