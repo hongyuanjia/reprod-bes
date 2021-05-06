@@ -8,7 +8,6 @@ description: >
     energy simulations using R.
 
 site: bookdown::bookdown_site
-url: https://reprod-bes.hongyuanjia.me
 github-repo: hongyuanjia/reprod-bes
 twitter-handle: jiahony
 cover-image: images/cover.png
@@ -48,6 +47,8 @@ if (knitr::is_latex_output()) {
     options(crayon.enabled = FALSE)
     options(cli.unicode = TRUE)
 }
+
+options(datatable.print.class = TRUE)
 ```
 
 # Welcome {-}
