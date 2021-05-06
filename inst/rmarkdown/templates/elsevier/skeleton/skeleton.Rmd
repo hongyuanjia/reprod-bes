@@ -15,8 +15,11 @@ footnote:
   - code: 1
     text: "Corresponding Author"
 
+description: |
+  This is the description.
 abstract: |
   This is the abstract.
+
   It consists of two paragraphs.
 keywords:
   - One;
@@ -28,12 +31,13 @@ keywords:
 date: "`r Sys.Date()`"
 
 journal: "An awesome journal"
-# citation data for Distill output:
-# volume: 10
-# issue: 4
-# doi: "10.23915/distill.00010"
-# slug: anonymous2018
-# citation_url: https://Your/URL
+
+# Distill output citation data
+volume: 10
+issue: 4
+doi: "10.23915/distill.00010"
+slug: anonymous2018
+citation_url: https://Your/URL
 
 bibliography: references.bib
 

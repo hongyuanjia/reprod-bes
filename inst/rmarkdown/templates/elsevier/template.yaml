@@ -1,4 +1,4 @@
-name: Elsevier Journal Article
+name: Elsevier & Distill Dual Article
 description: >
- Template for creating an article for submission to any Elsevier journal
+ Template for creating an article for both submission to any Elsevier journal and viewing online
 create_dir: true
