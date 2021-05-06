@@ -1,4 +1,4 @@
-Package: reprod.sim
+Package: reprod.bes
 Title: What the Package Does (One Line, Title Case)
 Version: 0.0.0.9000
 Authors@R:
@@ -30,5 +30,5 @@ Imports:
     targets,
     tinytex,
     usethis
-Depends: 
+Depends:
     tidyverse
