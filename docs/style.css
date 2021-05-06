@@ -1,0 +1,30 @@
+p.caption {
+  color: #777;
+  margin-top: 10px;
+}
+p code {
+  white-space: inherit;
+}
+pre {
+  word-break: normal;
+  word-wrap: normal;
+}
+pre code {
+  white-space: inherit;
+}
+
+/* source code line number */
+pre.numberSource code > span > a:first-child::before {
+  left: 0em;
+  padding: 0px 12px 0px 4px;
+  text-decoration: none;
+}
+pre > code.sourceCode > span > a:first-child:hover:before {
+  text-decoration: underline;
+}
+
+/* inline code */
+.book .book-body .page-wrapper .page-inner section.normal code {
+  border-radius: 5px;
+  background-color: #4070a01a;
+}
