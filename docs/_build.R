@@ -1,4 +1,4 @@
-bookdown::render_book("index.Rmd", quiet = TRUE)
+bookdown::render_book("index.Rmd", "all", quiet = TRUE)
 
 # syntax highlighting and automatic linking of R code
 paths <- fs::dir_ls("_book", glob = "*.html")
