@@ -138,7 +138,7 @@ edit_file(here("analysis/eda.R"))
 
 Copy the code blow to `analysis/eda/R` and run it by clicking
 ![](images/btn_source.png){#id width=10% style="vertical-align:middle;width:10%" display=inline-block}
-or pressing `Ctrl + Shift + Enter`. What the code below does is:
+or pressing `Ctrl + Shift + Enter` (`Cmd + Shift + Enter` on macOS). What the code below does is:
 
 1. Specify the model and weather file path based on the project using `here::here()`
 1. Read the model in R using `eplusr::read_idf()`
