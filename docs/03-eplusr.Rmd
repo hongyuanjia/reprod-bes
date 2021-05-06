@@ -34,7 +34,7 @@ and other materials.
 The main focuses of this chapter are:
 
 1.  to show how to create parametric models by applying measures using {eplusr} and
-2.  to demonstrate the data analyses of simulation outputs using {tidyverse} 
+2.  to demonstrate the data analyses of simulation outputs using {tidyverse}
 
 ## Prerequisites
 
