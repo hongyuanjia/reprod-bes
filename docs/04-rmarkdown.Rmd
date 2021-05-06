@@ -38,7 +38,7 @@ Also, in order to generate PDF output, you will have to install LaTeX.  You can
 install a lightweight LaTeX distribution called `TinyTeX` using the {tinytex}
 pacakge by running the code below:
 
-```{r tinytex, eval = FALSE}
+```{r, eval = FALSE}
 tinytex::install_tinytex()
 ```
 
