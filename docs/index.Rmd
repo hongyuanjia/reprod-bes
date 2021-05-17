@@ -44,6 +44,15 @@ knitr::knit_hooks$set(output = function(x, options) {
     hook_output(x, options)
 })
 
+hook_source <- knitr::knit_hooks$get("source")
+knitr::knit_hooks$set(source = function(x, options) {
+    if (!is.null(options$sink)) {
+        if (isTRUE(options$sink.append)) paste0("\n\n", x)
+        write(x, options$sink, append = isTRUE(options$sink.append))
+    }
+    hook_source(x, options)
+})
+
 if (knitr::is_latex_output()) {
     options(crayon.enabled = FALSE)
     options(cli.unicode = TRUE)

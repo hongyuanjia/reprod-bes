@@ -19,7 +19,7 @@ if (!eplusr::is_avail_eplus(9.4)) eplusr::install_eplus(9.4, local = TRUE)
 ```
 
 This chapter demonstrates the process of performing parametric simulation
-analyses using the `ParametricJob` class. It is based on the {eplusr}
+analyses using the {eplusr} package. It is based on the {eplusr}
 [*Run simulation and data exploration*](https://hongyuanjia.github.io/eplusr/articles/job.html),
 and
 [*Parametric simulations*](https://hongyuanjia.github.io/eplusr/articles/param.html)
@@ -31,10 +31,10 @@ and EnergyPlus. For that, please check {eplusr}
 [*Introduction to eplusr*](https://hongyuanjia.github.io/eplusr/articles/eplusr.html)
 and other materials.
 
-The main focuses of this chapter are:
+The main focuses of this chapter are to demonstrate:
 
-1.  to show how to create parametric models by applying measures using {eplusr} and
-2.  to demonstrate the data analyses of simulation outputs using {tidyverse}
+1. parametric models creation by applying measures using {eplusr} and
+2. data analyses of simulation outputs using {tidyverse}
 
 ## Prerequisites
 
@@ -94,6 +94,15 @@ medium office reference building model [@field2010using] and TMY3 weather data
 of Chicago Internal Airport. Both of them have already distributed together with
 EnergyPlus v9.4.
 
+We can use `eplusr::eplus_config()` to get the metadata of EnergyPlus installation:
+
+```{r eplus-config}
+eplus_config(9.4)
+```
+
+Once having EnergyPlus installation directory, we can get the path of the model
+and weather input using the code below:
+
 ```{r path-raw-input}
 # get EnergyPlus v9.4 installation path
 dir_eplus <- eplus_config(9.4)$dir
@@ -102,7 +111,7 @@ path_model <- path(dir_eplus, "ExampleFiles/RefBldgMediumOfficeNew2004_Chicago.i
 path_weather <- path(dir_eplus, "WeatherData/USA_IL_Chicago-OHare.Intl.AP.725300_TMY3.epw")
 ```
 
-We can copy them to the `data-raw` directory we just created by running:
+We can copy them into the `data-raw` directory we just created by running:
 
 ```{r copy-raw-input}
 file_copy(
@@ -120,60 +129,89 @@ Before we go for parametric simulations, it is good to first run a single
 simulation and do EDA (exploratory data analysis) to get an image on how the
 model the model looks like.
 
-### `analysis` script
+### `R` and `analysis` folder
 
-First, let's create a `analysis` folder using `usethis::use_directory("analysis")
-` to store the code for performing simulation and the EDA.
+First, let's create an `R` folder and inside create a `functions.R` script to
+store the functions we will use to modify models and extract simulation outputs.
+This can be easily done using `usethis:: use_r()` function:
+
+```{r use-r-fun}
+use_r("functions")
+```
+
+Inside `R/functions.R`, let's create a function called `preprocess_idf()` to do
+some processing before we actually call the model for simulation, including:
+
+1. Modify the `SimulationControl` object to use weather file for simulations.
+   This is because by default the DOE Medium Office Building model only runs
+   design day simulations.
+1. Modify the `OutputControl:Table:Style` object to change the units in tabular
+   output to `kWh`.
+1. Add hourly energy consumption under various categories in `Output:Meter`
+   class using `Idf$add()` method.
+
+```{r preprocess-idf, sink = here("R/functions.R")}
+preprocess_idf <- function(idf) {
+    # make sure weather file input is respected
+    idf$SimulationControl$Run_Simulation_for_Weather_File_Run_Periods <- "Yes"
+
+    # make sure energy consumption is presented in kWh
+    idf$OutputControl_Table_Style$Unit_Conversion <- "JtoKWH"
+
+    # add meter outputs to get hourly time-series energy consumption
+    meters <- c(
+        "Cooling:Electricity",
+        "Heating:Electricity",
+        "InteriorLights:Electricity",
+        "ExteriorLights:Electricity",
+        "InteriorEquipment:Electricity",
+        "Fans:Electricity",
+        "Pumps:Electricity"
+    )
+    idf$add(Output_Meter := list(meters, "Hourly"))
+
+    # make sure the modified model is returned
+    idf
+}
+```
+
+Then, let's create another folder called `analysis` using
+`usethis::use_directory("analysis") `. This folder will be used to store the code that
+calls functions in the `R/functions.R` to perform simulation and data analysis.
 
 ```{r}
 use_directory("analysis")
 ```
 
-After that, we create an R script called `eda.R` under `analysis/` folder. You
+After that, we create an R script called `run.R` under `analysis/` folder. You
 can do that directly in RStudio, or by running the code blow:
 
-```{r, eval = FALSE}
-edit_file(here("analysis/eda.R"))
+```{r}
+edit_file(here("analysis/run.R"))
 ```
 
-Copy the code blow to `analysis/eda/R` and run it by clicking
+Copy the code blow to `analysis/run/R` and run it by clicking
 ![](images/btn_source.png){#id width=10% style="vertical-align:middle;width:10%" display=inline-block}
 or pressing `Ctrl + Shift + Enter` (`Cmd + Shift + Enter` on macOS). What the code below does is:
 
+1. Source the functions we created inside `R/functions.R`
 1. Specify the model and weather file path based on the project using `here::here()`
 1. Read the model in R using `eplusr::read_idf()`
-1. Modify the `SimulationControl` object to use weather file for simulations
-1. Modify the `OutputControl:Table:Style` object to change the units in tabular
-   output to `kWh`
-1. Add hourly energy consumption under various categories in `Output:Meter`
-   class using `Idf$add()` method
+1. Pre-process the input model using `preprocess_idf()`
 1. Save the modified model into a temporary folder using `Idf$save()` method
 1. Run the simulation using `Idf$run()` method and assign the simulation to an
    `EplusJob` object named `job`
 
-```{r init-job, out.lines = 10}
+```{r init-job, out.lines = 10, sink = here("analysis/run.R")}
+# load helper functions defined
+source(here("R/functions.R"))
+
+# specify model and weather file locations
 path_idf <- here("data-raw/RefBldgMediumOfficeNew2004_Chicago.idf")
 path_epw <- here("data-raw/USA_IL_Chicago-OHare.Intl.AP.725300_TMY3.epw")
 
-idf <- read_idf(path_idf)
-
-# make sure weather file input is respected
-idf$SimulationControl$Run_Simulation_for_Weather_File_Run_Periods <- "Yes"
-
-# make sure energy consumption is presented in kWh
-idf$OutputControl_Table_Style$Unit_Conversion <- "JtoKWH"
-
-# add meter outputs to get hourly time-series energy consumption
-meters <- c(
-    "Cooling:Electricity",
-    "Heating:Electricity",
-    "InteriorLights:Electricity",
-    "ExteriorLights:Electricity",
-    "InteriorEquipment:Electricity",
-    "Fans:Electricity",
-    "Pumps:Electricity"
-)
-idf$add(Output_Meter := list(meters, "Hourly"))
+# read and pre-process the input model
+idf <- read_idf(path_idf) %>% preprocess_idf()
 
 # save the modified model into a temporary folder
 idf$save(path_temp("sim", path_file(idf$path())), overwrite = TRUE)
@@ -560,11 +598,11 @@ knitr::include_graphics("images/building_area.png")
 bldg_area <- job$tabular_data(table_name = "Building Area", wide = TRUE)[[1]]
 ```
 
-We can define a function `read_end_use()` that takes a simulation job, extract
-end uses and building area, and calculate the electricity per area in kWh/m^2 in
-each category:
+We can define a function `read_end_use()` in `R/functions.R` that takes a
+simulation job, extract end uses and building area, and calculate the
+electricity per area in kWh/m^2 in each category:
 
-```{r}
+```{r read-end-use, sink = here("R/functions.R"), sink.append = TRUE}
 read_end_use <- function(job) {
     end_use <- job$tabular_data(table_name = "End Uses", wide = TRUE)[[1]] %>%
         select(case, category = row_name, electricity = `Electricity [kWh]`)
@@ -584,7 +622,7 @@ read_end_use <- function(job) {
 Below the `plot_end_use()` function takes the results from `read_end_use()` and
 plot a pie chart using the {ggplot2} package.
 
-```{r}
+```{r plot-end-use, sink = here("R/functions.R"), sink.append = TRUE}
 plot_end_use <- function(end_use) {
     end_use %>%
         filter(category != "Total End Uses") %>%
@@ -661,9 +699,10 @@ The main steps to perform a parametric simulations are:
 ### Create a ParametricJob object
 
 We can use `eplusr::param_job()` to initialize a parametric simulation job.
-Here, we use the same model and weather file used in the previous simulation.
+Here, in `analysis/run.R`, we use the same model and weather file used in the
+previous simulation.
 
-```{r init-parm}
+```{r init-parm, sink = here("analysis/run.R"), sink.append = TRUE}
 path_idf <- here("data-raw/RefBldgMediumOfficeNew2004_Chicago.idf")
 path_epw <- here("data-raw/USA_IL_Chicago-OHare.Intl.AP.725300_TMY3.epw")
 
@@ -672,40 +711,10 @@ param <- param_job(path_idf, path_epw)
 
 ### Define measure functions
 
-#### Preprocess the model
-
-As described in [Run a single simulation], the model by default only runs design
-day simulations. Also, additional meter outputs need to be added.
-
-Basically we can just copy all the code in [Run a single simulation], and put it
-into a function:
-
-```{r preproc-idf}
-preprocess_idf <- function(idf) {
-    # make sure weather file input is respected
-    idf$SimulationControl$Run_Simulation_for_Weather_File_Run_Periods <- "Yes"
-
-    # make sure energy consumption is presented in kWh
-    idf$OutputControl_Table_Style$Unit_Conversion <- "JtoKWH"
-
-    # add meter outputs to get hourly time-series energy consumption
-    meters <- c(
-        "Cooling:Electricity",
-        "Heating:Electricity",
-        "InteriorLights:Electricity",
-        "ExteriorLights:Electricity",
-        "InteriorEquipment:Electricity",
-        "Fans:Electricity",
-        "Pumps:Electricity"
-    )
-    idf$add(Output_Meter := list(meters, "Hourly"))
-
-    # make sure the modified model is returned
-    idf
-}
-```
-
 #### Modify LPD (lighting power density)
+
+Since measures are functions that may be reused many times, it is better to save
+them in `R/functions.R`
 
 We define a measure called `set_lpd()` to change the LPD for all `Lights`
 objects.
@@ -713,7 +722,7 @@ objects.
 The core part is `idf$set(Lights := list(...))` which assigns all related fields
 in the `Lights` class to input values.
 
-```{r set-lpd}
+```{r set-lpd, sink = here("R/functions.R"), sink.append = TRUE}
 set_lpd <- function(idf, lpd = NA) {
     # keep the original if applicable
     if (is.na(lpd)) return(idf)
@@ -744,10 +753,10 @@ equip_sch$extract(timestep = "1 hour") %>%
     theme_minimal()
 ```
 
-Here we define a measure to modify the off-work schedule values of plug loads by
-multiplying a specified reduction faction value.
+In `R/functions.R`, we define a measure to modify the off-work schedule values
+of plug loads by multiplying a specified reduction faction value.
 
-```{r set-nightplug}
+```{r set-nightplug, sink = here("R/functions.R"), sink.append = TRUE}
 set_nightplug <- function(idf, frac = NA) {
     # keep the original if applicable
     if (is.na(frac)) return(idf)
@@ -775,10 +784,11 @@ set_nightplug <- function(idf, frac = NA) {
 
 #### Combine measures
 
-Once we have the measures defined, we can combine them together into one, in
-order to pass it to the `$apply_measure()` method in next step.
+Once we have the measures defined, we can combine them together into one in
+`R/functions.R`, in order to pass it to the `$apply_measure()` method in next
+step.
 
-```{r comb-mea}
+```{r comb-mea, sink = here("R/functions.R"), sink.append = TRUE}
 ecm <- function(idf, lpd, nightplug_frac) {
     idf %>% preprocess_idf() %>% set_lpd(lpd) %>% set_nightplug(nightplug_frac)
 }
@@ -787,9 +797,9 @@ ecm <- function(idf, lpd, nightplug_frac) {
 ### Apply measures
 
 Now we can use the mea `ecm` with our parameters to create parametric energy
-models.
+models. In `analysis/run.R`, we add:
 
-```{r apply-mea}
+```{r apply-mea, sink = here("analysis/run.R"), sink.append = TRUE}
 # apply measures and create parametric models
 param$apply_measure(ecm,
            # explicitly specify the name of each case
@@ -807,7 +817,9 @@ will be utilitized. If you want to explicitly specify the number of parallel
 simulation, you can use `eplusr_option(num_parallel = X)` where `X` is the
 number of cores.]
 
-```{r, eval = FALSE}
+In `analysis/run.R`, we run:
+
+```{r, eval = FALSE, sink = here("analysis/run.R"), sink.append = TRUE}
 param$run(dir = here("data/sim"))
 ```
 
@@ -826,7 +838,7 @@ dir_tree(here(), 2, regexp = "data")
 Recall the `read_end_use()` function we defined in [Energy comsumption contributions].
 We can directly use it to extract end uses for all models:
 
-```{r param-end-use}
+```{r param-end-use, sink = here("analysis/run.R"), sink.append = TRUE}
 end_uses <- read_end_use(param)
 ```
 
@@ -837,7 +849,7 @@ rmarkdown::paged_table(end_uses)
 We cal calculate the energy savings of the parametric models by calculating the
 electricity variations compared to the original model.
 
-```{r}
+```{r cal-savings, sink = here("analysis/run.R"), sink.append = TRUE}
 # extract the seed model, i.e. "Ori" case as the baseline
 end_uses_ori <- end_uses %>%
     filter(case == "Ori") %>%
@@ -866,7 +878,7 @@ trend for heating energy shows the opposite. This is due to the reason that all
 examined technologies will reduce indoor heat gains which plays a positive role
 during heating seasons.
 
-```{r savings, fig.width = 8, height = 3, fig.cap = "Energy savings of various lighting technologies and plug loads control strategies"}
+```{r savings, fig.width = 8, height = 3, fig.cap = "Energy savings of various lighting technologies and plug loads control strategies", sink = here("analysis/run.R"), sink.append = TRUE}
 end_uses_savings %>%
     filter(case != "Ori", !category %in% c("Exterior Lighting", "Pumps"), electricity > 0.1) %>%
     mutate(case = forcats::fct_inorder(case)) %>%
@@ -880,3 +892,13 @@ end_uses_savings %>%
     theme(strip.text = element_text(face = "bold", size = 11, hjust = 0)) +
     paletteer::scale_fill_paletteer_d("rcartocolor::Temps")
 ```
+
+## Current file structures
+
+### Update `.gitignore`
+
+### Commit
+
+```{r}
+```
+

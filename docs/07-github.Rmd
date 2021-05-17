@@ -3,7 +3,25 @@
 - `usethis::use_github()`
 - License
 - `usethis::use_code_of_conduct()`
+- `usethis::release()`
+- `usethis::use_version()`
 - citation
 - Zenodo
 - Netlify hosted bookdown for manuscript?
 
+For a research compendium, it is recommended to include the following contents:
+
+- A paragraph that describes the high-level purpose of the project. If the
+  compendium has an associated academic paper, name it.
+
+- The citation information in a bibliography style and also the BibTeX entry.
+
+- Instructions on how to run the research compendium locally or in the cloud.
+
+- A summary of the file structure.
+
+- Licenses about the text and figures, code and data.
+
+- Instructions on how to contribute to this research compendium
+
+- Lab team template?

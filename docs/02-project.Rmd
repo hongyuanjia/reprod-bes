@@ -229,14 +229,17 @@ use_git()
 ```{r init-git, eval = create, include = FALSE}
 with_project(projpath, use_git(), quiet = TRUE)
 
+git_commit_new <- function(projpath, message) {
+    usethis::with_project(projpath, quiet = TRUE, {
+        stat <- gert::git_status()
+        paths <- stat[stat$status == "new", "file", drop = TRUE]
+        gert::git_add(paths)
+        gert::git_commit("Initial commit")
+    })
+}
 # mimick the git commit process usethis::use_git() does in an interactive
 # session
-with_project(projpath, quiet = TRUE, {
-    stat <- gert::git_status()
-    paths <- stat[stat$status == "new", "file", drop = TRUE]
-    gert::git_add(paths)
-    gert::git_commit("Initial commit")
-})
+git_commit_new(projpath, "Initial commit")
 ```
 
 ## Create `DESCRIPTION`
@@ -322,5 +325,14 @@ If you are using GitKraken, the workspace will look similar like Fig.
 
 ```{r gitkraken, echo = FALSE, fig.cap = "GitKraken workspace overview"}
 knitr::include_graphics("images/gitkraken.png")
+```
+
+We can commit current changes using RStudio `Git` Pane or GitKraken with message
+`Setup basic project structure`.
+
+FIGURES
+
+```{r, echo = FALSE}
+git_commit_new(projpath, "Setup basic project structure")
 ```
 

@@ -1,6 +1,7 @@
 # Literate programming {#rmarkdown}
 
 ```{r include = FALSE}
+projpath <- "~/ReprodBES"
 usethis::proj_set(projpath)
 ```
 
@@ -85,7 +86,7 @@ Other excellent resources on learning R Markdown includes:
 This guide has provides you an R Markdown template.
 
 In RStudio, you can use it by clicking `File` > `New File` > `R Markdown` (Fig.
-\@ref(new-rmd)).
+\@ref(fig:new-rmd)).
 
 In the dialog, select `From Template` and `Elsevier & Distill Dual Article`
 template. Use `paper` as the name and set the location to the `analysis` folder.
@@ -100,8 +101,15 @@ knitr::include_graphics("images/rmd_from_template.png")
 
 Beside using the GUI, you can also run the `rmarkdown::draft()` function:
 
-```{r draft, eval = FALSE}
+```{r draft-fake, eval = FALSE}
 rmarkdown::draft(file = "analysis/paper", template = "elsevier", package = "reprod.bes")
+```
+
+```{r draft, echo = FALSE}
+withr::with_dir(projpath, {
+    if (fs::dir_exists("analysis/paper")) fs::dir_delete("analysis/paper")
+    rmarkdown::draft(file = "analysis/paper", template = "elsevier", package = "reprod.bes", edit = FALSE)
+})
 ```
 
 The template R Markdown file called `paper.Rmd` should be automatically opened
@@ -454,6 +462,8 @@ Below is the HTML meta data that Distill generated:
 
 For more details on the citation feature that Distill provides, please check out
 [Distill's website](https://rstudio.github.io/distill/citations.html)
+
+## Integrate R Markdown with analyses
 
 ## Edit R Markdown in Visual Mode
 
