@@ -105,7 +105,7 @@ Beside using the GUI, you can also run the `rmarkdown::draft()` function:
 rmarkdown::draft(file = "analysis/paper", template = "elsevier", package = "reprod.bes")
 ```
 
-```{r draft, echo = FALSE}
+```{r draft, echo = FALSE, eval = FALSE}
 withr::with_dir(projpath, {
     if (fs::dir_exists("analysis/paper")) fs::dir_delete("analysis/paper")
     rmarkdown::draft(file = "analysis/paper", template = "elsevier", package = "reprod.bes", edit = FALSE)
